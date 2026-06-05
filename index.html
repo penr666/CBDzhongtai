@@ -3,406 +3,1040 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CBD中台管理系统 - 数据大屏</title>
-<link rel="stylesheet" href="common.css">
+<title>CBD 商城管理系统</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #4F6EF7;
+  --primary-light: #EEF1FE;
+  --primary-dark: #3B55D9;
+  --success: #34C759;
+  --success-light: #ECFDF5;
+  --warning: #F5A623;
+  --warning-light: #FFF8EC;
+  --danger: #F5222D;
+  --danger-light: #FFF1F0;
+  --info: #13C2C2;
+  --info-light: #E6FFFB;
+  --bg: #F5F7FA;
+  --white: #FFFFFF;
+  --card: #FFFFFF;
+  --border: #E8ECF0;
+  --border-light: #F0F2F5;
+  --divider: #F0F2F5;
+  --text-primary: #1F2937;
+  --text-regular: #4B5563;
+  --text-secondary: #9CA3AF;
+  --text-placeholder: #C0C4CC;
+  --text-link: #4F6EF7;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --table-header-bg: #F5F7FA;
+  --bg-page: #F5F7FA;
+  --bg-white: #FFFFFF;
+}
+body { font-family: 'Noto Sans SC', 'Inter', -apple-system, sans-serif; font-size: 14px; color: var(--text-regular); background: var(--bg); line-height: 1.5; }
+ul, li { list-style: none; }
+a { text-decoration: none; color: var(--text-link); }
+a:hover { text-decoration: underline; }
+button { cursor: pointer; border: none; outline: none; font-size: 14px; font-family: inherit; }
+input, select, textarea { font-size: 14px; font-family: inherit; }
+
+/* System Switcher */
+.system-switcher {
+  height: 40px; background: #1a1a2e; display: flex; align-items: center; padding: 0 16px; gap: 4px; position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+}
+.sys-tab {
+  padding: 6px 16px; font-size: 13px; color: rgba(255,255,255,0.6); cursor: pointer; border-radius: 6px; transition: all 0.2s; font-weight: 500;
+}
+.sys-tab:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.sys-tab.active { color: #fff; background: var(--primary); }
+.sys-tab-logo { color: #fff; font-weight: 700; font-size: 14px; margin-right: 24px; letter-spacing: 1px; }
+
+/* ===== Sidebar ===== */
+.sidebar {
+  width: 232px; background: var(--white); border-right: 1px solid var(--border);
+  position: fixed; top: 40px; left: 0; bottom: 0; z-index: 100;
+  display: flex; flex-direction: column; box-shadow: 1px 0 4px rgba(0,0,0,0.03);
+}
+.sidebar-logo {
+  padding: 14px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--primary), #6C8AFF);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 700; font-size: 12px;
+}
+.logo-info .logo-title { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+.logo-info .logo-sub { font-size: 10px; color: var(--text-secondary); margin-top: 1px; }
+
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 6px 0; }
+.sidebar-nav::-webkit-scrollbar { width: 4px; }
+.sidebar-nav::-webkit-scrollbar-thumb { background: #E0E0E0; border-radius: 2px; }
+
+.nav-group { margin-bottom: 2px; }
+.nav-group-title { font-size: 11px; color: var(--text-secondary); padding: 8px 16px 3px; letter-spacing: 0.5px; font-weight: 500; }
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 16px; font-size: 13px; color: var(--text-regular);
+  cursor: pointer; transition: all 0.15s; margin: 1px 6px; border-radius: 6px;
+  position: relative;
+}
+.nav-item:hover { background: var(--bg); color: var(--text-primary); }
+.nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+.nav-item svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; flex-shrink: 0; }
+.nav-item .badge {
+  margin-left: auto; font-size: 10px; padding: 1px 6px; border-radius: 10px;
+  background: var(--danger); color: white; font-weight: 600; min-width: 16px; text-align: center;
+}
+.nav-item .arrow { margin-left: auto; font-size: 10px; color: var(--text-placeholder); transition: transform 0.2s; }
+.nav-item.expanded .arrow { transform: rotate(90deg); }
+
+/* ===== Main Content ===== */
+.main { margin-left: 232px; min-height: calc(100vh - 40px); display: flex; flex-direction: column; margin-top: 40px; }
+
+/* Top Bar */
+.topbar {
+  height: 48px; background: var(--white); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; position: sticky; top: 0; z-index: 50;
+}
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.breadcrumb { font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
+.breadcrumb span { color: var(--text-primary); font-weight: 500; }
+.breadcrumb .sep { color: var(--text-placeholder); }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.topbar-icon { width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: var(--bg); transition: background 0.15s; }
+.topbar-icon:hover { background: var(--primary-light); }
+.topbar-icon svg { width: 16px; height: 16px; stroke: var(--text-regular); fill: none; stroke-width: 1.6; }
+.topbar-icon .dot { position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--danger); }
+.topbar-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #6C8AFF); display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 600; cursor: pointer; }
+.topbar-user { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.topbar-user span { font-size: 12px; color: var(--text-primary); font-weight: 500; }
+
+.page-body { flex: 1; padding: 16px 20px; }
+
+/* ===== Common Components ===== */
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.page-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.page-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.page-actions { display: flex; gap: 8px; }
+
+.btn { display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; white-space: nowrap; }
+.btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-success { background: var(--success); color: white; }
+.btn-danger { background: var(--danger); color: white; }
+.btn-warning { background: var(--warning); color: white; }
+.btn-outline, .btn-default { background: var(--white); color: var(--text-regular); border: 1px solid var(--border); }
+.btn-outline:hover, .btn-default:hover { border-color: var(--primary); color: var(--primary); }
+.btn-text { background: none; color: var(--primary); padding: 4px 8px; }
+.btn-text:hover { background: var(--primary-light); }
+.btn-danger-text { background: none; color: var(--danger); padding: 4px 8px; }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
+/* Cards */
+.card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 16px; }
+.card-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--divider); }
+.card-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.card-body { padding: 18px; }
+.card-footer { padding: 10px 18px; border-top: 1px solid var(--divider); display: flex; justify-content: space-between; align-items: center; }
+
+/* Stat Cards */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+.stat-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; position: relative; overflow: hidden; }
+.stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.stat-card.blue::after { background: linear-gradient(90deg, var(--primary), #6C8AFF); }
+.stat-card.green::after { background: linear-gradient(90deg, var(--success), #6EE7B7); }
+.stat-card.orange::after { background: linear-gradient(90deg, var(--warning), #FCD34D); }
+.stat-card.red::after { background: linear-gradient(90deg, var(--danger), #FCA5A5); }
+.stat-card.teal::after { background: linear-gradient(90deg, var(--info), #67E8F9); }
+.stat-card.purple::after { background: linear-gradient(90deg, #8B5CF6, #C4B5FD); }
+.stat-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+.stat-icon svg { width: 20px; height: 20px; stroke-width: 1.8; }
+.stat-icon.blue { background: var(--primary-light); color: var(--primary); }
+.stat-icon.green { background: var(--success-light); color: var(--success); }
+.stat-icon.orange { background: var(--warning-light); color: var(--warning); }
+.stat-icon.red { background: var(--danger-light); color: var(--danger); }
+.stat-icon.teal { background: var(--info-light); color: var(--info); }
+.stat-icon.purple { background: #F5F3FF; color: #8B5CF6; }
+.stat-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+.stat-value { font-size: 24px; font-weight: 700; color: var(--text-primary); font-family: 'Inter', sans-serif; margin-bottom: 4px; letter-spacing: -0.5px; }
+.stat-footer { display: flex; align-items: center; gap: 4px; font-size: 11px; }
+.stat-footer.up { color: var(--success); }
+.stat-footer.down { color: var(--danger); }
+.stat-footer svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+/* Tables */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-size: 12px; color: var(--text-secondary); padding: 10px 14px; background: var(--bg); font-weight: 500; white-space: nowrap; border-bottom: 1px solid var(--border); }
+td { font-size: 13px; padding: 12px 14px; border-bottom: 1px solid var(--divider); color: var(--text-regular); }
+tr:hover td { background: var(--primary-light); }
+
+/* Status Tags */
+.tag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; white-space: nowrap; }
+.tag-blue { background: var(--primary-light); color: var(--primary); }
+.tag-green { background: var(--success-light); color: var(--success); }
+.tag-orange { background: var(--warning-light); color: var(--warning); }
+.tag-red { background: var(--danger-light); color: var(--danger); }
+.tag-teal { background: var(--info-light); color: var(--info); }
+.tag-gray { background: #F3F4F6; color: #6B7280; }
+.tag-purple { background: #F5F3FF; color: #8B5CF6; }
+.tag-success { background: var(--success-light); color: var(--success); }
+.tag-danger { background: var(--danger-light); color: var(--danger); }
+.tag-warning { background: var(--warning-light); color: var(--warning); }
+
+/* Filter Bar */
+.filter-bar { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 14px; display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+.filter-group { display: flex; flex-direction: column; gap: 3px; }
+.filter-label { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
+.filter-input, .filter-select {
+  background: var(--bg); border: 1px solid var(--border); color: var(--text-primary);
+  padding: 6px 10px; border-radius: var(--radius-sm); font-size: 13px; font-family: inherit;
+  min-width: 140px; outline: none; transition: border-color 0.15s;
+}
+.filter-input:focus, .filter-select:focus { border-color: var(--primary); }
+.filter-input::placeholder { color: var(--text-placeholder); }
+.filter-date { width: 130px; }
+.filter-actions { display: flex; gap: 8px; align-items: flex-end; }
+
+/* Tabs */
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+.tab { padding: 8px 16px; font-size: 13px; color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; font-weight: 500; }
+.tab:hover { color: var(--text-primary); }
+.tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab .count { font-size: 11px; background: var(--bg); padding: 1px 6px; border-radius: 10px; margin-left: 4px; color: var(--text-secondary); }
+.tab.active .count { background: var(--primary-light); color: var(--primary); }
+
+/* Pagination */
+.pagination { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
+.page-info { font-size: 12px; color: var(--text-secondary); }
+.page-btns { display: flex; gap: 4px; }
+.page-btn { min-width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: var(--white); color: var(--text-regular); display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; font-family: inherit; }
+.page-btn:hover { border-color: var(--primary); color: var(--primary); }
+.page-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+/* Charts Placeholder */
+.chart-placeholder { height: 200px; background: linear-gradient(180deg, rgba(79,110,247,0.03) 0%, transparent 100%); border-radius: 8px; border: 1px dashed var(--border); display: flex; align-items: flex-end; padding: 16px; gap: 6px; }
+.chart-bar { flex: 1; border-radius: 4px 4px 0 0; transition: height 0.3s; }
+
+/* Alert Bar */
+.alert-bar { border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.alert-bar.warning { background: var(--warning-light); border: 1px solid #FDE68A; color: #92400E; }
+.alert-bar.danger { background: var(--danger-light); border: 1px solid #FECACA; color: #991B1B; }
+.alert-bar.info { background: var(--primary-light); border: 1px solid #C7D2FE; color: #3730A3; }
+
+/* Grid layouts */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
+.grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 14px; }
+
+/* Quick link grid */
+.quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.quick-item { text-align: center; padding: 14px 8px; border-radius: var(--radius-md); cursor: pointer; border: 1px solid var(--border); transition: all 0.15s; }
+.quick-item:hover { border-color: var(--primary); background: var(--primary-light); }
+.quick-item svg { width: 24px; height: 24px; stroke: var(--primary); fill: none; stroke-width: 1.6; display: block; margin: 0 auto 6px; }
+.quick-item span { font-size: 11px; color: var(--text-regular); display: block; }
+
+/* Descriptions */
+.desc-list { display: flex; flex-wrap: wrap; }
+.desc-item { display: flex; min-width: 260px; padding: 8px 0; border-bottom: 1px solid var(--divider); }
+.desc-label { width: 90px; flex-shrink: 0; font-size: 12px; color: var(--text-secondary); }
+.desc-value { flex: 1; font-size: 12px; color: var(--text-primary); }
+
+/* Form */
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 12px; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
+.form-label .required { color: var(--danger); margin-left: 2px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 7px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 13px; font-family: inherit; color: var(--text-primary); background: var(--white);
+  outline: none; transition: border-color 0.15s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,110,247,0.1); }
+.form-textarea { min-height: 70px; resize: vertical; }
+.form-hint { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }
+.form-row { display: flex; gap: 16px; margin-bottom: 4px; flex-wrap: wrap; }
+.form-row .form-group { flex: 1; min-width: 200px; }
+
+/* Switch toggle */
+.switch { position: relative; display: inline-block; width: 36px; height: 20px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; inset: 0; background: #ccc; transition: 0.3s; border-radius: 20px; }
+.slider::before { content: ''; position: absolute; height: 14px; width: 14px; left: 3px; bottom: 3px; background: white; transition: 0.3s; border-radius: 50%; }
+.switch input:checked + .slider { background: var(--primary); }
+.switch input:checked + .slider::before { transform: translateX(16px); }
+
+/* Benefit cards */
+.benefit-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+.benefit-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center; }
+.benefit-card .level-name { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.benefit-card .level-condition { font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; }
+.benefit-card .level-perks { font-size: 12px; color: var(--text-regular); line-height: 1.6; margin-bottom: 8px; }
+.benefit-card .level-count { font-size: 11px; color: var(--text-secondary); }
+
+/* Section title */
+.section-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+/* Two column layout with tree */
+.two-col { display: grid; grid-template-columns: 280px 1fr; gap: 16px; }
+.tree-list { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.tree-item { padding: 10px 14px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--divider); display: flex; justify-content: space-between; align-items: center; }
+.tree-item:hover { background: var(--bg); }
+.tree-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+.tree-item .count { font-size: 11px; color: var(--text-secondary); }
+.tree-sub { padding-left: 20px; }
+.tree-sub .tree-item { font-size: 12px; padding: 8px 14px; }
+
+/* Tag list */
+.tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag-item { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 12px; font-size: 12px; cursor: pointer; border: 1px solid var(--border); transition: all 0.15s; }
+.tag-item:hover { border-color: var(--primary); color: var(--primary); }
+.tag-item.active { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+
+/* Funnel chart */
+.funnel { display: flex; flex-direction: column; gap: 4px; }
+.funnel-step { display: flex; align-items: center; gap: 8px; }
+.funnel-bar { height: 28px; border-radius: 4px; display: flex; align-items: center; padding: 0 8px; font-size: 11px; color: white; font-weight: 500; }
+.funnel-label { font-size: 12px; color: var(--text-secondary); min-width: 60px; }
+.funnel-value { font-size: 12px; color: var(--text-primary); font-weight: 500; }
+
+/* Empty state */
+.empty { text-align: center; padding: 40px 20px; color: var(--text-secondary); font-size: 13px; }
+</style>
 </head>
 <body>
 
-<!-- Sidebar -->
-<div class="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-icon">CB</div>
-    <div class="logo-info"><div class="logo-title">CBD中台</div><div class="logo-sub">跨境供应链管理平台</div></div>
-  </div>
-  <div class="sidebar-nav">
-    <!-- 首页 -->
-    <div class="nav-group">
-      <div class="nav-group-title">首页</div>
-      <a class="nav-item active" href="index.html">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        数据大屏
-      </a>
-      <a class="nav-item" href="monitor.html">
-        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01"/></svg>
-        监控管理
-        <span class="badge">5</span>
-      </a>
-    </div>
-
-    <!-- 订单 -->
-    <div class="nav-group">
-      <div class="nav-group-title">订单</div>
-      <a class="nav-item" href="order-list.html">
-        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-        订单列表
-        <span class="badge">12</span>
-      </a>
-      <a class="nav-item" href="order-aftersale.html">
-        <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-        订单售后
-      </a>
-      <a class="nav-item" href="order-settings.html">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33h.09a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        订单设置
-      </a>
-    </div>
-
-    <!-- 商品 -->
-    <div class="nav-group">
-      <div class="nav-group-title">商品</div>
-      <a class="nav-item" href="product-self.html">
-        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
-        自营商品
-      </a>
-      <a class="nav-item" href="product-supplier.html">
-        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M7.5 4.21v4.1a2 2 0 001.14 1.8l5 2.5a2 2 0 001.72 0l5-2.5a2 2 0 001.14-1.8V4.21"/></svg>
-        供应商商品
-      </a>
-      <a class="nav-item" href="product-category.html">
-        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        商品分类
-      </a>
-      <a class="nav-item" href="product-base.html">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09"/></svg>
-        基础配置
-        <span class="arrow">›</span>
-      </a>
-    </div>
-
-    <!-- 物流 -->
-    <div class="nav-group">
-      <div class="nav-group-title">物流</div>
-      <a class="nav-item" href="logistics.html">
-        <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="m16 8 5 3v5H16"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-        物流管理
-      </a>
-    </div>
-
-    <!-- 风控 -->
-    <div class="nav-group">
-      <div class="nav-group-title">风控</div>
-      <a class="nav-item" href="risk.html">
-        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        风控管理
-      </a>
-    </div>
-
-    <!-- 供应商 -->
-    <div class="nav-group">
-      <div class="nav-group-title">供应商</div>
-      <a class="nav-item" href="supplier.html">
-        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        供应商管理
-      </a>
-    </div>
-
-    <!-- 渠道商 -->
-    <div class="nav-group">
-      <div class="nav-group-title">渠道商</div>
-      <a class="nav-item" href="channel.html">
-        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-        渠道商管理
-      </a>
-    </div>
-
-    <!-- 财务 -->
-    <div class="nav-group">
-      <div class="nav-group-title">财务</div>
-      <a class="nav-item" href="finance.html">
-        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-        结算管理
-      </a>
-    </div>
-
-    <!-- 报表 -->
-    <div class="nav-group">
-      <div class="nav-group-title">报表</div>
-      <a class="nav-item" href="report-product.html">
-        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        商品统计
-      </a>
-      <a class="nav-item" href="report-trade.html">
-        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        交易统计
-      </a>
-      <a class="nav-item" href="report-merchant.html">
-        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        商户统计
-      </a>
-    </div>
-
-    <!-- 会员中心 -->
-    <div class="nav-group">
-      <div class="nav-group-title">会员中心</div>
-      <a class="nav-item" href="member-list.html">
-        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        会员列表
-      </a>
-      <a class="nav-item" href="member-tags.html">
-        <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-        会员标签
-      </a>
-      <a class="nav-item" href="member-benefits.html">
-        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        会员权益
-      </a>
-    </div>
-
-    <!-- 商城运营 -->
-    <div class="nav-group">
-      <div class="nav-group-title">商城运营</div>
-      <a class="nav-item" href="operation-data.html">
-        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        运营数据
-      </a>
-      <a class="nav-item" href="operation-info.html">
-        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        商城信息
-      </a>
-    </div>
-
-    <!-- 关务 -->
-    <div class="nav-group">
-      <div class="nav-group-title">关务</div>
-      <a class="nav-item" href="customs.html">
-        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        关务中心
-      </a>
-    </div>
-
-    <!-- 税务 -->
-    <div class="nav-group">
-      <div class="nav-group-title">税务</div>
-      <a class="nav-item" href="tax.html">
-        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        税务管理
-      </a>
-    </div>
-
-    <!-- 系统设置 -->
-    <div class="nav-group">
-      <div class="nav-group-title">系统设置</div>
-      <a class="nav-item" href="system-account.html">
-        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        系统账号
-      </a>
-      <a class="nav-item" href="system-notify.html">
-        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-        订阅通知
-      </a>
-      <a class="nav-item" href="system-general.html">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09"/></svg>
-        通用设置
-      </a>
-      <a class="nav-item" href="system-delivery.html">
-        <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="m16 8 5 3v5H16"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-        配送设置
-      </a>
-      <a class="nav-item" href="system-freight.html">
-        <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-        运费模板
-      </a>
-    </div>
-  </div>
+<!-- System Switcher -->
+<div class="system-switcher">
+  <div class="sys-tab-logo">CBD</div>
+  <div class="sys-tab active" onclick="switchSystem('shop')">商城后台</div>
+  <div class="sys-tab" onclick="switchSystem('platform')">供应商中台</div>
 </div>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar"></div>
 
 <!-- Main -->
 <div class="main">
-  <!-- Top Bar -->
   <div class="topbar">
-    <div class="topbar-left">
-      <div class="breadcrumb">首页 <span class="sep">/</span> <span>数据大屏</span></div>
-    </div>
+    <div class="topbar-left"><div class="breadcrumb" id="breadcrumb"></div></div>
     <div class="topbar-right">
-      <div class="topbar-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
-      <div class="topbar-icon">
-        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-        <span class="dot"></span>
-      </div>
-      <div class="topbar-user">
-        <div class="topbar-avatar">管</div>
-        <span>管理员</span>
-      </div>
+      <div class="topbar-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></div>
+      <div class="topbar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="dot" style="position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--danger);"></span></div>
+      <div class="topbar-user"><div class="topbar-avatar">管</div><span>管理员</span></div>
     </div>
   </div>
-
-  <!-- Page Body -->
-  <div class="page-body">
-    <!-- Alert -->
-    <div class="alert-bar warning">
-      ⚠️ 您有 <b>5</b> 条待处理预警：超时未发货 3 | 异常订单 2 | 库存预警 8 | 退款待处理 5 | 疑似刷单 1，<a href="monitor.html" style="color:inherit;text-decoration:underline;">立即处理 ›</a>
-    </div>
-
-    <!-- Stats -->
-    <div class="stat-grid">
-      <div class="stat-card blue">
-        <div class="stat-icon blue"><svg viewBox="0 0 24 24" stroke="currentColor"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-        <div class="stat-label">今日GMV</div>
-        <div class="stat-value">¥286.5W</div>
-        <div class="stat-footer up"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> 12.5% 较昨日</div>
-      </div>
-      <div class="stat-card green">
-        <div class="stat-icon green"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
-        <div class="stat-label">今日订单数</div>
-        <div class="stat-value">1,284</div>
-        <div class="stat-footer up"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> 8.3% 较昨日</div>
-      </div>
-      <div class="stat-card orange">
-        <div class="stat-icon orange"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-        <div class="stat-label">活跃供应商</div>
-        <div class="stat-value">56</div>
-        <div class="stat-footer up"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> 3 本周新增</div>
-      </div>
-      <div class="stat-card teal">
-        <div class="stat-icon teal"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-        <div class="stat-label">活跃渠道数</div>
-        <div class="stat-value">23</div>
-        <div class="stat-footer up"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> 2 本月新增</div>
-      </div>
-    </div>
-
-    <!-- Second Row Stats -->
-    <div class="stat-grid" style="grid-template-columns: repeat(5, 1fr);">
-      <div class="stat-card green">
-        <div class="stat-label">今日交易额</div>
-        <div class="stat-value" style="font-size:22px;">¥198.2W</div>
-        <div class="stat-footer up">↑ 10.1%</div>
-      </div>
-      <div class="stat-card blue">
-        <div class="stat-label">付款订单数</div>
-        <div class="stat-value" style="font-size:22px;">962</div>
-        <div class="stat-footer up">↑ 7.8%</div>
-      </div>
-      <div class="stat-card red">
-        <div class="stat-label">售后单数</div>
-        <div class="stat-value" style="font-size:22px;">18</div>
-        <div class="stat-footer down">↑ 3 较昨日</div>
-      </div>
-      <div class="stat-card orange">
-        <div class="stat-label">退款金额</div>
-        <div class="stat-value" style="font-size:22px;">¥2.8W</div>
-        <div class="stat-footer down">↑ 15.2%</div>
-      </div>
-      <div class="stat-card purple">
-        <div class="stat-label">品牌数</div>
-        <div class="stat-value" style="font-size:22px;">128</div>
-        <div class="stat-footer up">↑ 4 本月</div>
-      </div>
-    </div>
-
-    <!-- Charts Row -->
-    <div class="grid-2-1" style="margin-bottom:16px;">
-      <!-- Sales Trend -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">销售趋势</div>
-          <div style="display:flex;gap:4px;">
-            <span class="tag tag-blue" style="cursor:pointer;">近7天</span>
-            <span class="tag tag-gray" style="cursor:pointer;">近30天</span>
-            <span class="tag tag-gray" style="cursor:pointer;">近90天</span>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="chart-placeholder">
-            <div class="chart-bar" style="height:45%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div>
-            <div class="chart-bar" style="height:62%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div>
-            <div class="chart-bar" style="height:55%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div>
-            <div class="chart-bar" style="height:78%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div>
-            <div class="chart-bar" style="height:65%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div>
-            <div class="chart-bar" style="height:90%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div>
-            <div class="chart-bar" style="height:72%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-top:8px;padding:0 20px;">
-            <span>5/22</span><span>5/23</span><span>5/24</span><span>5/25</span><span>5/26</span><span>5/27</span><span>5/28</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Channel Distribution -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">销售渠道分布</div>
-        </div>
-        <div class="card-body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:240px;">
-          <div style="width:160px;height:160px;border-radius:50%;background:conic-gradient(var(--primary) 0% 40%, var(--success) 40% 65%, var(--warning) 65% 85%, #8B5CF6 85% 100%);position:relative;">
-            <div style="position:absolute;top:20%;left:20%;right:20%;bottom:20%;background:var(--white);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-              <div style="font-size:24px;font-weight:700;color:var(--text-primary);font-family:Inter;">56</div>
-              <div style="font-size:10px;color:var(--text-secondary);">总渠道</div>
-            </div>
-          </div>
-          <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;justify-content:center;">
-            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-secondary);"><span style="width:8px;height:8px;border-radius:2px;background:var(--primary);"></span>小程序 40%</div>
-            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-secondary);"><span style="width:8px;height:8px;border-radius:2px;background:var(--success);"></span>H5 25%</div>
-            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-secondary);"><span style="width:8px;height:8px;border-radius:2px;background:var(--warning);"></span>分销 20%</div>
-            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-secondary);"><span style="width:8px;height:8px;border-radius:2px;background:#8B5CF6;"></span>其他 15%</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tables Row -->
-    <div class="grid-2" style="margin-bottom:16px;">
-      <!-- Recent Orders -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">最新订单</div>
-          <a href="order-list.html" style="font-size:12px;color:var(--primary);text-decoration:none;">查看全部 ›</a>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>订单号</th><th>金额</th><th>渠道</th><th>状态</th></tr></thead>
-            <tbody>
-              <tr><td style="color:var(--primary);font-weight:500;">CB20260528001</td><td>¥18,800</td><td>小程序</td><td><span class="tag tag-green">已付款</span></td></tr>
-              <tr><td style="color:var(--primary);font-weight:500;">CB20260528002</td><td>¥2,180</td><td>H5</td><td><span class="tag tag-orange">待发货</span></td></tr>
-              <tr><td style="color:var(--primary);font-weight:500;">CB20260528003</td><td>¥32,800</td><td>小程序</td><td><span class="tag tag-teal">清关中</span></td></tr>
-              <tr><td style="color:var(--primary);font-weight:500;">CB20260528004</td><td>¥12,600</td><td>分销</td><td><span class="tag tag-red">售后中</span></td></tr>
-              <tr><td style="color:var(--primary);font-weight:500;">CB20260528005</td><td>¥5,960</td><td>小程序</td><td><span class="tag tag-blue">已发货</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Supplier Activity -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">供应商动态</div>
-          <a href="supplier.html" style="font-size:12px;color:var(--primary);text-decoration:none;">查看全部 ›</a>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>供应商</th><th>商品数</th><th>状态</th></tr></thead>
-            <tbody>
-              <tr><td>巴黎奢品供应链</td><td>328</td><td><span class="tag tag-green">正常</span></td></tr>
-              <tr><td>香港国际名品</td><td>186</td><td><span class="tag tag-green">正常</span></td></tr>
-              <tr><td>东京美妆直供</td><td>92</td><td><span class="tag tag-orange">审核中</span></td></tr>
-              <tr><td>意大利皮具中心</td><td>156</td><td><span class="tag tag-red">已冻结</span></td></tr>
-              <tr><td>韩国美妆集采</td><td>64</td><td><span class="tag tag-blue">入驻中</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Quick Entry -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">快捷入口</div>
-      </div>
-      <div class="card-body">
-        <div class="quick-grid">
-          <a class="quick-item" href="order-list.html"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg><span>订单管理</span></a>
-          <a class="quick-item" href="product-self.html"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg><span>自营商品</span></a>
-          <a class="quick-item" href="supplier.html"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>供应商</span></a>
-          <a class="quick-item" href="finance.html"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>结算管理</span></a>
-          <a class="quick-item" href="report-trade.html"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>交易报表</span></a>
-          <a class="quick-item" href="customs.html"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>关务中心</span></a>
-          <a class="quick-item" href="member-list.html"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>会员管理</span></a>
-          <a class="quick-item" href="risk.html"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg><span>风控管理</span></a>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div class="page-body" id="pageBody"></div>
 </div>
 
+<script>
+// ==================== DATA ====================
+let currentSystem = 'shop';
+let currentPage = '';
+
+const shopMenus = [
+  { group: '商品', items: ['商品管理', '添加商品', '商品品牌', '店铺分类', '商品标签', '素材管理'] },
+  { group: '交易', items: ['全部订单', '交易单', '售后列表', '退款单', '运费模板', '配送管理'] },
+  { group: '会员', items: ['会员列表'] },
+  { group: '店铺', items: ['店铺信息'] },
+  { group: '营销', items: ['优惠券管理', '发券记录', '加价购', '组合购', '限时优惠', '商品限购', '满折', '满减', '满赠'] },
+  { group: '报表', items: ['店铺统计', '结算汇总'] },
+  { group: '设置', items: ['店铺管理员', '店铺角色', '配送员', '导出列表', '脱敏数据'] }
+];
+
+const platformMenus = [
+  { group: '首页', items: ['数据大屏', '监控管理'] },
+  { group: '订单', items: ['订单列表', '订单售后', '订单设置'] },
+  { group: '商品', items: ['自营商品', '供应商商品', '商品分类', '基础配置'] },
+  { group: '物流/风控', items: ['物流管理', '风控管理'] },
+  { group: '供应链', items: ['供应商管理', '渠道商管理'] },
+  { group: '财务/报表', items: ['结算管理', '商品统计', '交易统计', '商户统计'] },
+  { group: '会员', items: ['会员列表', '会员标签', '会员权益'] },
+  { group: '商城运营', items: ['运营数据', '商城信息'] },
+  { group: '关务/税务', items: ['关务中心', '税务管理'] },
+  { group: '系统设置', items: ['系统账号', '订阅通知', '通用设置', '配送设置', '运费模板'] }
+];
+
+// ==================== SYSTEM SWITCH ====================
+function switchSystem(sys) {
+  currentSystem = sys;
+  document.querySelectorAll('.sys-tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && sys === 'shop') || (i === 1 && sys === 'platform'));
+  });
+  const menus = sys === 'shop' ? shopMenus : platformMenus;
+  renderSidebar(menus);
+  selectPage(menus[0].items[0]);
+}
+
+function renderSidebar(menus) {
+  const nav = document.getElementById('sidebar');
+  const logo = sys => sys === 'shop' ? 'CBD商城' : 'CBD中台';
+  const sub = sys => sys === 'shop' ? '商城后台管理系统' : '跨境供应链管理平台';
+  nav.innerHTML = `
+    <div class="sidebar-logo">
+      <div class="logo-icon">CB</div>
+      <div class="logo-info"><div class="logo-title">${logo(currentSystem)}</div><div class="logo-sub">${sub(currentSystem)}</div></div>
+    </div>
+    <div class="sidebar-nav">
+      ${menus.map(g => `
+        <div class="nav-group">
+          <div class="nav-group-title">${g.group}</div>
+          ${g.items.map(item => `<div class="nav-item" onclick="selectPage('${item}')" id="nav-${item}">${item}</div>`).join('')}
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+function selectPage(page) {
+  currentPage = page;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const el = document.getElementById('nav-' + page);
+  if (el) el.classList.add('active');
+  const bc = document.getElementById('breadcrumb');
+  const menus = currentSystem === 'shop' ? shopMenus : platformMenus;
+  const grp = menus.find(g => g.items.includes(page));
+  bc.innerHTML = `${grp ? grp.group : ''} <span class="sep">/</span> <span>${page}</span>`;
+  const content = currentSystem === 'shop' ? getShopPage(page) : getPlatformPage(page);
+  document.getElementById('pageBody').innerHTML = content;
+}
+
+// ==================== SHOP PAGES ====================
+function getShopPage(page) {
+  const fns = {
+    '商品管理': shopProductManage, '添加商品': shopAddProduct, '商品品牌': shopBrand,
+    '店铺分类': shopCategory, '商品标签': shopTag, '素材管理': shopMaterial,
+    '全部订单': shopAllOrders, '交易单': shopTradeOrder, '售后列表': shopAfterSale,
+    '退款单': shopRefund, '运费模板': shopShippingTemplate, '配送管理': shopDelivery,
+    '会员列表': shopMemberList, '店铺信息': shopInfo,
+    '优惠券管理': shopCoupon, '发券记录': shopCouponRecord,
+    '加价购': () => shopSimplePage('加价购','创建活动',['活动名称','状态','时间','操作']),
+    '组合购': () => shopSimplePage('组合购','创建活动',['活动名称','状态','时间','操作']),
+    '限时优惠': () => shopSimplePage('限时优惠','创建活动',['活动名称','状态','时间','操作']),
+    '商品限购': () => shopSimplePage('商品限购','创建活动',['商品','限购数量','状态','操作']),
+    '满折': () => shopSimplePage('满折','创建活动',['活动名称','状态','时间','操作']),
+    '满减': () => shopSimplePage('满减','创建活动',['活动名称','状态','时间','操作']),
+    '满赠': () => shopSimplePage('满赠','创建活动',['活动名称','状态','时间','操作']),
+    '店铺统计': shopStat, '结算汇总': shopSettlement,
+    '店铺管理员': shopAdmin, '店铺角色': shopRole, '配送员': shopDeliveryStaff,
+    '导出列表': shopExport, '脱敏数据': shopDesensitize
+  };
+  return (fns[page] ? (typeof fns[page] === 'function' ? fns[page]() : fns[page]) : `<div class="empty">页面开发中</div>`);
+}
+
+function shopSimplePage(title, btn, headers) {
+  return `<div class="page-header"><div><div class="page-title">${title}</div></div><div class="page-actions"><button class="btn btn-primary">+ ${btn}</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody><tr><td colspan="${headers.length}" class="empty">暂无数据</td></tr></tbody></table></div></div>`;
+}
+
+function shopProductManage() {
+  return `
+  <div class="filter-bar">
+    <div class="filter-group"><div class="filter-label">商品标题</div><input class="filter-input" placeholder="商品标题或副标题"></div>
+    <div class="filter-group"><div class="filter-label">管理分类</div><select class="filter-select"><option>全部</option><option>吉利汽车</option><option>粮油干副</option><option>运动户外</option></select></div>
+    <div class="filter-group"><div class="filter-label">品牌</div><input class="filter-input" placeholder="品牌关键词"></div>
+    <div class="filter-group"><div class="filter-label">SKU编码</div><input class="filter-input" placeholder="请输入SKU编码"></div>
+    <div class="filter-actions"><button class="btn btn-primary btn-sm">查询</button><button class="btn btn-outline btn-sm">重置</button></div>
+  </div>
+  <div class="page-header">
+    <div style="display:flex;gap:8px;"><button class="btn btn-primary" onclick="selectPage('添加商品')">+ 添加商品</button><button class="btn btn-outline">更改销售分类</button><button class="btn btn-outline">打标签</button><button class="btn btn-outline">更改状态</button></div>
+    <div style="display:flex;gap:8px;"><button class="btn btn-outline">导入 ▼</button><button class="btn btn-outline">导出 ▼</button></div>
+  </div>
+  <div class="tabs"><div class="tab active">全部商品</div><div class="tab">库存预警</div></div>
+  <div class="card"><div class="table-wrap"><table>
+    <thead><tr><th><input type="checkbox"></th><th>商品ID</th><th>商品标题</th><th>SKU编码</th><th>库存</th><th>销售价</th><th>市场价</th><th>成本价</th><th>商品状态</th><th>审核状态</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td><input type="checkbox"></td><td>7470</td><td>0413</td><td>KC26041300000002</td><td>1</td><td>0.00</td><td>1.00</td><td>1.00</td><td><span class="tag tag-danger">不可销售</span></td><td><span class="tag tag-success">已审核</span></td><td><button class="btn btn-text btn-sm">编辑</button><button class="btn btn-text btn-sm">投放</button></td></tr>
+      <tr><td><input type="checkbox"></td><td>7469</td><td>测试版运动上衣</td><td>KC26041300000001</td><td>50</td><td>0.00</td><td>30.00</td><td>50.00</td><td><span class="tag tag-danger">不可销售</span></td><td><span class="tag tag-success">已审核</span></td><td><button class="btn btn-text btn-sm">编辑</button><button class="btn btn-text btn-sm">投放</button></td></tr>
+    </tbody>
+  </table></div>
+  <div class="card-footer"><div class="page-info">共 2 条</div><div class="page-btns"><div class="page-btn active">1</div></div></div></div>`;
+}
+
+function shopAddProduct() {
+  return `
+  <div class="card" style="padding:20px;">
+    <div class="section-title">商品详情</div>
+    <div style="margin-bottom:20px;"><div style="font-size:13px;font-weight:600;margin-bottom:8px;">管理分类</div>
+      <div class="form-row"><div class="form-group"><label class="form-label"><span class="required">*</span>管理分类:</label><select class="form-select"><option value="">请选择</option><option>吉利汽车</option><option>粮油干副</option><option>餐饮</option><option>休闲零食</option><option>运动户外</option><option>配件</option></select></div></div>
+    </div>
+    <div style="margin-bottom:20px;"><div style="font-size:13px;font-weight:600;margin-bottom:8px;">基础信息</div>
+      <div class="form-row"><div class="form-group"><label class="form-label"><span class="required">*</span>商品标题:</label><input class="form-input" placeholder="请输入商品标题"></div><div class="form-group"><label class="form-label">副标题:</label><input class="form-input" placeholder="请输入副标题"></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label"><span class="required">*</span>运费模板:</label><select class="form-select"><option value="">请选择</option><option>按件数</option></select></div><div class="form-group"><label class="form-label"><span class="required">*</span>品牌:</label><select class="form-select"><option value="">请选择</option><option>品牌A</option><option>品牌B</option></select></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">计量单位:</label><input class="form-input" placeholder="请输入"></div><div class="form-group"><label class="form-label">销售分类:</label><select class="form-select"><option value="">请选择</option><option>运动休闲鞋</option><option>配件</option></select></div><div class="form-group"><label class="form-label">排序编号:</label><input class="form-input" type="number" value="0"></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">商品图片:</label><div style="display:flex;gap:8px;"><div style="width:72px;height:72px;border:1px dashed var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--text-placeholder);"><span style="font-size:20px;">+</span><span style="font-size:10px;">上传图片</span></div><div style="font-size:11px;color:var(--text-secondary);line-height:1.5;">1.建议尺寸:800*800<br>2.最多上传9张<br>3.支持jpg、jpeg、png</div></div></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">供应状态:</label><select class="form-select"><option>不可售</option><option>可售</option></select></div><div class="form-group"><label class="form-label">是否赠品:</label><label class="switch"><input type="checkbox"><span class="slider"></span></label></div><div class="form-group"><label class="form-label">是否多规格:</label><label class="switch"><input type="checkbox"><span class="slider"></span></label></div></div>
+    </div>
+    <div style="margin-bottom:20px;"><div style="font-size:13px;font-weight:600;margin-bottom:8px;">规格信息</div>
+      <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;"><table><thead><tr><th>规格名称</th><th>SKU编码</th><th>库存</th><th>成本价(¥)</th><th>销售价(¥)</th><th>市场价(¥)</th><th>条形码</th><th>起订量</th><th>发货时间</th></tr></thead>
+      <tbody><tr><td><input class="form-input" placeholder="请输入" style="min-width:80px;"></td><td><input class="form-input" placeholder="请输入" style="min-width:80px;"></td><td><input class="form-input" type="number" placeholder="0" style="min-width:60px;"></td><td><input class="form-input" placeholder="0.00" style="min-width:80px;"></td><td><input class="form-input" placeholder="0.00" style="min-width:80px;"></td><td><input class="form-input" placeholder="0.00" style="min-width:80px;"></td><td><input class="form-input" placeholder="请输入" style="min-width:100px;"></td><td><input class="form-input" type="number" value="0" style="min-width:60px;"></td><td><input class="form-input" placeholder="请输入" style="min-width:80px;"></td></tr></tbody></table>
+      <div style="padding:6px 12px;border-top:1px solid var(--border);background:var(--bg);"><button class="btn btn-text btn-sm">+ 添加规格</button></div></div>
+    </div>
+    <div style="margin-bottom:20px;"><div style="font-size:13px;font-weight:600;margin-bottom:8px;">PC关键词搜索引擎</div>
+      <div class="form-row"><div class="form-group"><label class="form-label">页面标题:</label><input class="form-input" placeholder="请输入"></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">页面描述:</label><input class="form-input" placeholder="请输入"></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">关键词:</label><input class="form-input" placeholder='关键词之间请用半角","分隔'></div></div>
+    </div>
+    <div style="margin-bottom:20px;"><div style="font-size:13px;font-weight:600;margin-bottom:8px;">图文详情</div>
+      <div style="display:flex;gap:12px;margin-bottom:8px;"><label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px;"><input type="radio" name="editorType" checked style="accent-color:var(--primary);"> 富文本</label><label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px;"><input type="radio" name="editorType" style="accent-color:var(--primary);"> 组件式</label></div>
+      <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;"><div style="display:flex;gap:2px;padding:4px 6px;border-bottom:1px solid var(--border);background:var(--bg);"><button style="padding:3px 6px;background:none;border:none;cursor:pointer;font-size:12px;">📝</button><button style="padding:3px 6px;background:none;border:none;cursor:pointer;font-size:12px;">🎨</button><button style="padding:3px 6px;background:none;border:none;cursor:pointer;font-size:12px;">Aa</button><button style="padding:3px 6px;background:none;border:none;cursor:pointer;font-size:12px;">📋</button><button style="padding:3px 6px;background:none;border:none;cursor:pointer;font-size:12px;">↩️</button></div><div contenteditable="true" style="min-height:160px;padding:12px;font-size:13px;outline:none;"></div></div>
+    </div>
+  </div>
+  <div style="position:sticky;bottom:0;background:var(--white);border-top:1px solid var(--border);padding:10px 20px;display:flex;justify-content:flex-end;gap:8px;z-index:10;"><button class="btn btn-outline">取消</button><button class="btn btn-primary">保存</button><button class="btn btn-success">提交审核</button></div>`;
+}
+
+function shopBrand() {
+  return `<div class="page-header"><div><div class="page-title">商品品牌</div></div><div class="page-actions"><button class="btn btn-primary">+ 新增品牌</button></div></div>
+  <div class="filter-bar"><div class="filter-group"><div class="filter-label">品牌名称</div><input class="filter-input" placeholder="请输入"></div><div class="filter-actions"><button class="btn btn-primary btn-sm">查询</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>品牌ID</th><th>品牌名称</th><th>品牌首字母</th><th>排序</th><th>是否显示</th><th>操作</th></tr></thead><tbody><tr><td colspan="6" class="empty">暂无数据</td></tr></tbody></table></div></div>`;
+}
+
+function shopCategory() {
+  return `<div class="page-header"><div><div class="page-title">店铺分类</div></div><div class="page-actions"><button class="btn btn-primary">+ 新增分类</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>分类名称</th><th>分类图标</th><th>排序</th><th>是否显示</th><th>操作</th></tr></thead><tbody><tr><td colspan="5" class="empty">暂无数据</td></tr></tbody></table></div></div>`;
+}
+
+function shopTag() {
+  return `<div class="page-header"><div><div class="page-title">商品标签</div></div><div class="page-actions"><button class="btn btn-primary">+ 新增标签</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>标签ID</th><th>标签名称</th><th>标签类型</th><th>关联商品数</th><th>操作</th></tr></thead><tbody><tr><td colspan="5" class="empty">暂无数据</td></tr></tbody></table></div></div>`;
+}
+
+function shopMaterial() {
+  return `<div class="page-header"><div><div class="page-title">素材管理</div></div></div>
+  <div class="tabs"><div class="tab active">本地图片</div><div class="tab">本地视频</div></div>
+  <div class="card"><div class="card-body"><div style="display:flex;gap:8px;margin-bottom:12px;"><button class="btn btn-primary btn-sm">选择</button><button class="btn btn-outline btn-sm">添加分组</button></div>
+  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;">
+    <div style="aspect-ratio:1;border:1px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-placeholder);"><span style="font-size:24px;">+</span></div>
+  </div></div></div>`;
+}
+
+function shopAllOrders() {
+  return `<div class="page-header"><div><div class="page-title">全部订单</div></div></div>
+  <div class="tabs"><div class="tab active">全部</div><div class="tab">待支付</div><div class="tab">待发货</div><div class="tab">已完成</div></div>
+  <div class="filter-bar"><div class="filter-group"><div class="filter-label">订单号</div><input class="filter-input" placeholder="请输入"></div><div class="filter-group"><div class="filter-label">订单状态</div><select class="filter-select"><option>全部</option></select></div><div class="filter-actions"><button class="btn btn-primary btn-sm">查询</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>订单号</th><th>商品</th><th>金额</th><th>状态</th><th>下单时间</th><th>操作</th></tr></thead><tbody><tr><td colspan="6" class="empty">暂无数据</td></tr></tbody></table></div></div>`;
+}
+
+function shopTradeOrder() { return shopSimplePage('交易单','导出',['交易单号','金额','状态','时间','操作']); }
+function shopAfterSale() { return shopSimplePage('售后列表','导出',['售后单号','订单号','类型','状态','操作']); }
+function shopRefund() { return shopSimplePage('退款单','导出',['退款单号','金额','状态','时间','操作']); }
+
+function shopShippingTemplate() {
+  return `<div class="page-header"><div><div class="page-title">运费模板</div></div><div class="page-actions"><button class="btn btn-primary">+ 新增运费模板</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>模板名称</th><th>计费方式</th><th>运费</th><th>包邮条件</th><th>操作</th></tr></thead><tbody><tr><td colspan="5" class="empty">暂无数据</td></tr></tbody></table></div></div>`;
+}
+
+function shopDelivery() { return shopSimplePage('配送管理','导出',['配送方式','状态','操作']); }
+
+function shopMemberList() {
+  return `<div class="page-header"><div><div class="page-title">会员列表</div></div><div class="page-actions"><button class="btn btn-outline">导出</button></div></div>
+  <div class="filter-bar"><div class="filter-group"><div class="filter-label">手机号</div><input class="filter-input" placeholder="请输入"></div><div class="filter-group"><div class="filter-label">会员等级</div><select class="filter-select"><option>全部</option></select></div><div class="filter-actions"><button class="btn btn-primary btn-sm">查询</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>手机号</th><th>昵称</th><th>会员等级</th><th>累积消费</th><th>注册时间</th><th>操作</th></tr></thead><tbody><tr><td colspan="6" class="empty">暂无数据</td></tr></tbody></table></div></div>`;
+}
+
+function shopInfo() {
+  return `<div class="page-header"><div><div class="page-title">店铺信息</div></div><div class="page-actions"><button class="btn btn-primary">保存</button></div></div>
+  <div class="card" style="padding:20px;">
+    <div class="form-group"><label class="form-label">店铺名称:</label><input class="form-input" value="CBD商城"></div>
+    <div class="form-group"><label class="form-label">店铺简介:</label><textarea class="form-textarea" rows="3" placeholder="请输入店铺简介"></textarea></div>
+    <div class="form-group"><label class="form-label">联系电话:</label><input class="form-input" placeholder="请输入联系电话"></div>
+  </div>`;
+}
+
+function shopCoupon() { return shopSimplePage('优惠券管理','创建优惠券',['优惠券名称','类型','面值','有效期','状态','操作']); }
+function shopCouponRecord() { return shopSimplePage('发券记录','导出',['优惠券','用户','领取时间','使用状态','操作']); }
+
+function shopStat() {
+  return `<div class="page-header"><div><div class="page-title">店铺统计</div></div></div>
+  <div class="stat-grid">
+    <div class="stat-card blue"><div class="stat-label">今日访客</div><div class="stat-value">1,256</div><div class="stat-footer up">↑ 12.5%</div></div>
+    <div class="stat-card green"><div class="stat-label">今日订单</div><div class="stat-value">86</div><div class="stat-footer up">↑ 8.3%</div></div>
+    <div class="stat-card orange"><div class="stat-label">今日GMV</div><div class="stat-value">¥12.8W</div><div class="stat-footer up">↑ 15.2%</div></div>
+    <div class="stat-card teal"><div class="stat-label">转化率</div><div class="stat-value">6.8%</div><div class="stat-footer down">↓ 0.5%</div></div>
+  </div>`;
+}
+
+function shopSettlement() {
+  return `<div class="page-header"><div><div class="page-title">结算汇总</div></div><div class="page-actions"><button class="btn btn-outline">导出</button></div></div>
+  <div class="filter-bar"><div class="filter-group"><div class="filter-label">结算状态</div><select class="filter-select"><option>全部</option><option>已结算</option><option>待结算</option></select></div><div class="filter-actions"><button class="btn btn-primary btn-sm">查询</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>帐单编号</th><th>店铺</th><th>订单数量</th><th>结算金额</th><th>结算状态</th><th>结算时间</th><th>操作</th></tr></thead><tbody><tr><td colspan="7" class="empty">暂无数据</td></tr></tbody></table></div></div>`;
+}
+
+function shopAdmin() {
+  return `<div class="page-header"><div><div class="page-title">店铺管理员</div></div><div class="page-actions"><button class="btn btn-primary">+ 添加管理员</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>管理员</th><th>账号</th><th>角色</th><th>状态</th><th>操作</th></tr></thead><tbody><tr><td>管理员</td><td>admin</td><td>超级管理员</td><td><span class="tag tag-success">正常</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr></tbody></table></div></div>`;
+}
+
+function shopRole() { return shopSimplePage('店铺角色','添加角色',['角色名称','权限','人数','操作']); }
+function shopDeliveryStaff() { return shopSimplePage('配送员','添加配送员',['姓名','手机号','状态','操作']); }
+function shopExport() { return shopSimplePage('导出列表','导出',['文件名','类型','状态','时间','操作']); }
+function shopDesensitize() { return shopSimplePage('脱敏数据','导出',['字段','脱敏规则','状态','操作']); }
+
+// ==================== PLATFORM PAGES ====================
+function getPlatformPage(page) {
+  const fns = {
+    '数据大屏': platDashboard, '监控管理': platMonitor,
+    '订单列表': platOrderList, '订单售后': platOrderAfterSale, '订单设置': platOrderSettings,
+    '自营商品': platProductSelf, '供应商商品': platProductSupplier, '商品分类': platProductCategory, '基础配置': platProductBase,
+    '物流管理': platLogistics, '风控管理': platRisk,
+    '供应商管理': platSupplier, '渠道商管理': platChannel,
+    '结算管理': platFinance, '商品统计': platReportProduct, '交易统计': platReportTrade, '商户统计': platReportMerchant,
+    '会员列表': platMemberList, '会员标签': platMemberTags, '会员权益': platMemberBenefits,
+    '运营数据': platOperationData, '商城信息': platOperationInfo,
+    '关务中心': platCustoms, '税务管理': platTax,
+    '系统账号': platSystemAccount, '订阅通知': platSystemNotify, '通用设置': platSystemGeneral, '配送设置': platSystemDelivery, '运费模板': platSystemFreight
+  };
+  return (fns[page] ? fns[page]() : `<div class="empty">页面开发中</div>`);
+}
+
+function platDashboard() {
+  return `
+  <div class="alert-bar warning">⚠️ 您有 <b>5</b> 条待处理预警：超时未发货 3 | 异常订单 2 | 库存预警 8 | 退款待处理 5，<a href="#" onclick="selectPage('监控管理')" style="color:inherit;text-decoration:underline;">立即处理 ›</a></div>
+  <div class="stat-grid">
+    <div class="stat-card blue"><div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div class="stat-label">今日GMV</div><div class="stat-value">¥286.5W</div><div class="stat-footer up">↑ 12.5% 较昨日</div></div>
+    <div class="stat-card green"><div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg></div><div class="stat-label">今日订单数</div><div class="stat-value">1,284</div><div class="stat-footer up">↑ 8.3% 较昨日</div></div>
+    <div class="stat-card orange"><div class="stat-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="stat-label">活跃供应商</div><div class="stat-value">56</div><div class="stat-footer up">↑ 3 本周新增</div></div>
+    <div class="stat-card teal"><div class="stat-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="stat-label">活跃渠道数</div><div class="stat-value">23</div><div class="stat-footer up">↑ 2 本月新增</div></div>
+  </div>
+  <div class="stat-grid" style="grid-template-columns:repeat(5,1fr);">
+    <div class="stat-card green"><div class="stat-label">今日交易额</div><div class="stat-value" style="font-size:20px;">¥198.2W</div><div class="stat-footer up">↑ 10.1%</div></div>
+    <div class="stat-card blue"><div class="stat-label">付款订单数</div><div class="stat-value" style="font-size:20px;">962</div><div class="stat-footer up">↑ 7.8%</div></div>
+    <div class="stat-card red"><div class="stat-label">售后单数</div><div class="stat-value" style="font-size:20px;">18</div><div class="stat-footer down">↑ 3</div></div>
+    <div class="stat-card orange"><div class="stat-label">退款金额</div><div class="stat-value" style="font-size:20px;">¥2.8W</div><div class="stat-footer down">↑ 15.2%</div></div>
+    <div class="stat-card purple"><div class="stat-label">品牌数</div><div class="stat-value" style="font-size:20px;">128</div><div class="stat-footer up">↑ 4 本月</div></div>
+  </div>
+  <div class="grid-2-1" style="margin-bottom:16px;">
+    <div class="card"><div class="card-header"><div class="card-title">销售趋势</div><div style="display:flex;gap:4px;"><span class="tag tag-blue" style="cursor:pointer;">近7天</span><span class="tag tag-gray" style="cursor:pointer;">近30天</span></div></div>
+    <div class="card-body"><div class="chart-placeholder"><div class="chart-bar" style="height:45%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:62%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:55%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:78%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:65%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:90%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:72%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div></div><div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-secondary);margin-top:6px;"><span>5/22</span><span>5/23</span><span>5/24</span><span>5/25</span><span>5/26</span><span>5/27</span><span>5/28</span></div></div></div>
+    <div class="card"><div class="card-header"><div class="card-title">销售渠道分布</div></div>
+    <div class="card-body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;">
+      <div style="width:140px;height:140px;border-radius:50%;background:conic-gradient(var(--primary) 0% 40%,var(--success) 40% 65%,var(--warning) 65% 85%,#8B5CF6 85% 100%);position:relative;"><div style="position:absolute;top:20%;left:20%;right:20%;bottom:20%;background:var(--white);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:22px;font-weight:700;">56</div><div style="font-size:10px;color:var(--text-secondary);">总渠道</div></div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;justify-content:center;"><div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-secondary);"><span style="width:8px;height:8px;border-radius:2px;background:var(--primary);"></span>小程序 40%</div><div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-secondary);"><span style="width:8px;height:8px;border-radius:2px;background:var(--success);"></span>H5 25%</div><div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-secondary);"><span style="width:8px;height:8px;border-radius:2px;background:var(--warning);"></span>分销 20%</div><div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-secondary);"><span style="width:8px;height:8px;border-radius:2px;background:#8B5CF6;"></span>其他 15%</div></div>
+    </div></div>
+  </div>
+  <div class="grid-2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-header"><div class="card-title">最新订单</div><a href="#" onclick="selectPage('订单列表')" style="font-size:12px;">查看全部 ›</a></div><div class="table-wrap"><table><thead><tr><th>订单号</th><th>金额</th><th>渠道</th><th>状态</th></tr></thead><tbody><tr><td style="color:var(--primary);font-weight:500;">CB20260528001</td><td>¥18,800</td><td>小程序</td><td><span class="tag tag-green">已付款</span></td></tr><tr><td style="color:var(--primary);font-weight:500;">CB20260528002</td><td>¥2,180</td><td>H5</td><td><span class="tag tag-orange">待发货</span></td></tr><tr><td style="color:var(--primary);font-weight:500;">CB20260528003</td><td>¥32,800</td><td>小程序</td><td><span class="tag tag-teal">清关中</span></td></tr><tr><td style="color:var(--primary);font-weight:500;">CB20260528004</td><td>¥12,600</td><td>分销</td><td><span class="tag tag-red">售后中</span></td></tr><tr><td style="color:var(--primary);font-weight:500;">CB20260528005</td><td>¥5,960</td><td>小程序</td><td><span class="tag tag-blue">已发货</span></td></tr></tbody></table></div></div>
+    <div class="card"><div class="card-header"><div class="card-title">供应商动态</div><a href="#" onclick="selectPage('供应商管理')" style="font-size:12px;">查看全部 ›</a></div><div class="table-wrap"><table><thead><tr><th>供应商</th><th>商品数</th><th>状态</th></tr></thead><tbody><tr><td>巴黎奢品供应链</td><td>328</td><td><span class="tag tag-green">正常</span></td></tr><tr><td>香港国际名品</td><td>186</td><td><span class="tag tag-green">正常</span></td></tr><tr><td>东京美妆直供</td><td>92</td><td><span class="tag tag-orange">审核中</span></td></tr><tr><td>意大利皮具中心</td><td>156</td><td><span class="tag tag-red">已冻结</span></td></tr><tr><td>韩国美妆集采</td><td>64</td><td><span class="tag tag-blue">入驻中</span></td></tr></tbody></table></div></div>
+  </div>
+  <div class="card"><div class="card-header"><div class="card-title">快捷入口</div></div><div class="card-body"><div class="quick-grid">
+    <a class="quick-item" href="#" onclick="selectPage('订单列表')"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg><span>订单管理</span></a>
+    <a class="quick-item" href="#" onclick="selectPage('自营商品')"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg><span>自营商品</span></a>
+    <a class="quick-item" href="#" onclick="selectPage('供应商管理')"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>供应商</span></a>
+    <a class="quick-item" href="#" onclick="selectPage('结算管理')"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>结算管理</span></a>
+    <a class="quick-item" href="#" onclick="selectPage('关务中心')"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>关务中心</span></a>
+    <a class="quick-item" href="#" onclick="selectPage('会员列表')"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>会员管理</span></a>
+    <a class="quick-item" href="#" onclick="selectPage('风控管理')"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg><span>风控管理</span></a>
+    <a class="quick-item" href="#" onclick="selectPage('商城信息')"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>商城信息</span></a>
+  </div></div></div>`;
+}
+
+function platMonitor() {
+  return `<div class="page-header"><div><div class="page-title">监控管理</div><div class="page-desc">实时监控平台运行状态、异常预警</div></div><div class="page-actions"><button class="btn btn-outline">刷新数据</button></div></div>
+  <div class="stat-grid">
+    <div class="stat-card red"><div class="stat-label">超时订单</div><div class="stat-value">5</div><div class="stat-footer up">+2</div></div>
+    <div class="stat-card orange"><div class="stat-label">异常订单</div><div class="stat-value">3</div><div class="stat-footer up">-1</div></div>
+    <div class="stat-card blue"><div class="stat-label">库存预警</div><div class="stat-value">12</div><div class="stat-footer up">+4</div></div>
+    <div class="stat-card green"><div class="stat-label">系统健康度</div><div class="stat-value">98.5%</div><div class="stat-footer up">正常</div></div>
+  </div>
+  <div class="tabs"><div class="tab active">超时订单</div><div class="tab">异常订单</div><div class="tab">库存预警</div><div class="tab">支付异常</div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>订单号</th><th>类型</th><th>超时时长</th><th>状态</th><th>操作</th></tr></thead><tbody>
+    <tr><td style="color:var(--primary);font-weight:500;">CBD20260602001</td><td>跨境保税</td><td>48h+</td><td><span class="tag tag-red">超时未发货</span></td><td><button class="btn btn-text btn-sm">处理</button></td></tr>
+    <tr><td style="color:var(--primary);font-weight:500;">CBD20260602015</td><td>一般贸易</td><td>72h+</td><td><span class="tag tag-red">超时未发货</span></td><td><button class="btn btn-text btn-sm">处理</button></td></tr>
+    <tr><td style="color:var(--primary);font-weight:500;">CBD20260601088</td><td>海外直邮</td><td>36h</td><td><span class="tag tag-orange">清关延误</span></td><td><button class="btn btn-text btn-sm">追踪</button></td></tr>
+  </tbody></table></div></div>`;
+}
+
+function platOrderList() {
+  return `<div class="page-header"><div><div class="page-title">订单列表</div><div class="page-desc">集中管理多渠道平台订单履约</div></div><div class="page-actions"><button class="btn btn-outline">导出订单</button></div></div>
+  <div class="tabs"><div class="tab active">全部 <span class="count">1,286</span></div><div class="tab">待支付 <span class="count">24</span></div><div class="tab">待发货 <span class="count">12</span></div><div class="tab">待退款 <span class="count">5</span></div><div class="tab">已完成 <span class="count">1,204</span></div></div>
+  <div class="filter-bar"><div class="filter-group"><div class="filter-label">订单号</div><input class="filter-input" placeholder="请输入订单号"></div><div class="filter-group"><div class="filter-label">订单状态</div><select class="filter-select"><option>全部状态</option><option>待支付</option><option>待发货</option><option>待退款</option><option>已完成</option></select></div><div class="filter-group"><div class="filter-label">订单类型</div><select class="filter-select"><option>全部类型</option><option>跨境保税</option><option>海外直邮</option><option>一般贸易</option></select></div><div class="filter-actions"><button class="btn btn-primary btn-sm">搜索</button><button class="btn btn-outline btn-sm">重置</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th><input type="checkbox"></th><th>订单号</th><th>订单金额</th><th>结算价</th><th>运费</th><th>订单店铺</th><th>订单类型</th><th>订单状态</th><th>下单时间</th><th>操作</th></tr></thead><tbody>
+    <tr><td><input type="checkbox"></td><td style="color:var(--primary);font-weight:500;">CB20260528001</td><td style="font-weight:600;">¥18,800</td><td>¥15,040</td><td>¥0</td><td>CBD奢选旗舰店</td><td><span class="tag tag-teal">跨境保税</span></td><td><span class="tag tag-green">待发货</span></td><td>2026-05-28 10:32</td><td><button class="btn btn-text btn-sm">发货</button><button class="btn btn-text btn-sm">详情</button></td></tr>
+    <tr><td><input type="checkbox"></td><td style="color:var(--primary);font-weight:500;">CB20260528002</td><td style="font-weight:600;">¥2,180</td><td>¥1,744</td><td>¥0</td><td>CBD奢选旗舰店</td><td><span class="tag tag-teal">跨境保税</span></td><td><span class="tag tag-orange">待支付</span></td><td>2026-05-28 09:18</td><td><button class="btn btn-text btn-sm">详情</button></td></tr>
+    <tr><td><input type="checkbox"></td><td style="color:var(--primary);font-weight:500;">CB20260528003</td><td style="font-weight:600;">¥32,800</td><td>¥26,240</td><td>¥0</td><td>巴黎奢品店</td><td><span class="tag tag-blue">海外直邮</span></td><td><span class="tag tag-blue">清关中</span></td><td>2026-05-28 08:45</td><td><button class="btn btn-text btn-sm">追踪</button><button class="btn btn-text btn-sm">详情</button></td></tr>
+    <tr><td><input type="checkbox"></td><td style="color:var(--primary);font-weight:500;">CB20260528004</td><td style="font-weight:600;">¥12,600</td><td>¥10,080</td><td>¥25</td><td>CBD奢选旗舰店</td><td><span class="tag tag-gray">一般贸易</span></td><td><span class="tag tag-red">待退款</span></td><td>2026-05-27 22:10</td><td><button class="btn btn-text btn-sm">处理</button><button class="btn btn-text btn-sm">详情</button></td></tr>
+    <tr><td><input type="checkbox"></td><td style="color:var(--primary);font-weight:500;">CB20260528005</td><td style="font-weight:600;">¥5,960</td><td>¥4,768</td><td>¥0</td><td>香港名品店</td><td><span class="tag tag-teal">跨境保税</span></td><td><span class="tag tag-green">已完成</span></td><td>2026-05-27 19:30</td><td><button class="btn btn-text btn-sm">详情</button></td></tr>
+  </tbody></table></div><div class="card-footer"><div class="page-info">共 1,286 条</div><div class="page-btns"><div class="page-btn">‹</div><div class="page-btn active">1</div><div class="page-btn">2</div><div class="page-btn">3</div><div class="page-btn">...</div><div class="page-btn">86</div><div class="page-btn">›</div></div></div></div>`;
+}
+
+function platOrderAfterSale() {
+  return `<div class="page-header"><div><div class="page-title">订单售后</div><div class="page-desc">售后单管理、审核及售后原因配置</div></div></div>
+  <div class="tabs"><div class="tab active">全部 <span class="count">86</span></div><div class="tab">待审核 <span class="count">5</span></div><div class="tab">处理中 <span class="count">12</span></div><div class="tab">已退款 <span class="count">58</span></div></div>
+  <div class="filter-bar"><div class="filter-group"><div class="filter-label">售后单号</div><input class="filter-input" placeholder="请输入"></div><div class="filter-group"><div class="filter-label">售后类型</div><select class="filter-select"><option>全部</option><option>退货退款</option><option>仅退款</option></select></div><div class="filter-actions"><button class="btn btn-primary btn-sm">搜索</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>售后单号</th><th>订单号</th><th>退款金额</th><th>售后类型</th><th>售后状态</th><th>申请时间</th><th>操作</th></tr></thead><tbody>
+    <tr><td>AS20260528001</td><td style="color:var(--primary);">CB20260528004</td><td>¥12,600</td><td><span class="tag tag-blue">退货退款</span></td><td><span class="tag tag-orange">待审核</span></td><td>2026-05-28 14:20</td><td><button class="btn btn-text btn-sm">审核</button></td></tr>
+    <tr><td>AS20260528002</td><td style="color:var(--primary);">CB20260528002</td><td>¥2,180</td><td><span class="tag tag-gray">仅退款</span></td><td><span class="tag tag-blue">处理中</span></td><td>2026-05-28 11:30</td><td><button class="btn btn-text btn-sm">处理</button></td></tr>
+    <tr><td>AS20260528003</td><td style="color:var(--primary);">CB20260528005</td><td>¥5,960</td><td><span class="tag tag-blue">退货退款</span></td><td><span class="tag tag-green">已退款</span></td><td>2026-05-27 16:45</td><td><button class="btn btn-text btn-sm">详情</button></td></tr>
+  </tbody></table></div><div class="card-footer"><div class="page-info">共 86 条</div><div class="page-btns"><div class="page-btn active">1</div><div class="page-btn">2</div><div class="page-btn">›</div></div></div></div>`;
+}
+
+function platOrderSettings() {
+  return `<div class="page-header"><div><div class="page-title">订单设置</div><div class="page-desc">配置订单自动处理规则</div></div><div class="page-actions"><button class="btn btn-primary">保存设置</button></div></div>
+  <div class="card" style="padding:20px;">
+    <div class="section-title">订单自动处理规则</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">未付款自动取消:</label><div style="display:flex;align-items:center;gap:8px;"><input class="form-input" type="number" value="30" style="width:80px;"><span style="font-size:12px;">分钟</span></div></div><div class="form-group"><label class="form-label">已发货自动完成:</label><div style="display:flex;align-items:center;gap:8px;"><input class="form-input" type="number" value="15" style="width:80px;"><span style="font-size:12px;">天</span></div></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">售后申请时限:</label><div style="display:flex;align-items:center;gap:8px;"><input class="form-input" type="number" value="7" style="width:80px;"><span style="font-size:12px;">天</span></div></div><div class="form-group"><label class="form-label">退货超时驳回:</label><div style="display:flex;align-items:center;gap:8px;"><input class="form-input" type="number" value="7" style="width:80px;"><span style="font-size:12px;">天</span></div></div></div>
+    <div class="section-title" style="margin-top:20px;">跨境订单特殊设置</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">清关信息补全时限:</label><div style="display:flex;align-items:center;gap:8px;"><input class="form-input" type="number" value="3" style="width:80px;"><span style="font-size:12px;">天后自动取消</span></div></div><div class="form-group"><label class="form-label">清关失败处理:</label><select class="form-select"><option>自动退款</option><option>人工处理</option><option>通知消费者补充信息</option></select></div></div>
+  </div>`;
+}
+
+function platProductSelf() {
+  return `<div class="page-header"><div><div class="page-title">自营商品</div><div class="page-desc">管理自营商品信息、上下架、库存预警</div></div><div class="page-actions"><button class="btn btn-outline">导出</button><button class="btn btn-primary">+ 添加商品</button></div></div>
+  <div class="stat-grid"><div class="stat-card blue"><div class="stat-label">全部商品</div><div class="stat-value">1,286</div></div><div class="stat-card green"><div class="stat-label">已上架</div><div class="stat-value">892</div></div><div class="stat-card orange"><div class="stat-label">已下架</div><div class="stat-value">360</div></div><div class="stat-card red"><div class="stat-label">库存预警</div><div class="stat-value">8</div></div></div>
+  <div class="filter-bar"><div class="filter-group"><div class="filter-label">商品名称</div><input class="filter-input" placeholder="请输入"></div><div class="filter-group"><div class="filter-label">商品状态</div><select class="filter-select"><option>全部</option><option>已上架</option><option>已下架</option></select></div><div class="filter-actions"><button class="btn btn-primary btn-sm">搜索</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th><input type="checkbox"></th><th>商品信息</th><th>SPU编码</th><th>市场价</th><th>销售价</th><th>库存</th><th>标签</th><th>状态</th><th>操作</th></tr></thead><tbody>
+    <tr><td><input type="checkbox"></td><td><div style="display:flex;align-items:center;gap:8px;"><div style="width:36px;height:36px;background:var(--bg);border-radius:4px;display:flex;align-items:center;justify-content:center;">👜</div><div><div style="font-weight:500;">迪奥经典款手提包</div></div></div></td><td>SP20260501</td><td>¥18,800</td><td>¥15,040</td><td>128</td><td><span class="tag tag-red">热销</span></td><td><span class="tag tag-green">已上架</span></td><td><button class="btn btn-text btn-sm">编辑</button><button class="btn btn-text btn-sm">下架</button></td></tr>
+    <tr><td><input type="checkbox"></td><td><div style="display:flex;align-items:center;gap:8px;"><div style="width:36px;height:36px;background:var(--bg);border-radius:4px;display:flex;align-items:center;justify-content:center;">🧴</div><div><div style="font-weight:500;">海蓝之谜经典面霜</div></div></div></td><td>SP20260502</td><td>¥2,180</td><td>¥1,744</td><td>56</td><td><span class="tag tag-blue">新品</span></td><td><span class="tag tag-green">已上架</span></td><td><button class="btn btn-text btn-sm">编辑</button><button class="btn btn-text btn-sm">下架</button></td></tr>
+    <tr><td><input type="checkbox"></td><td><div style="display:flex;align-items:center;gap:8px;"><div style="width:36px;height:36px;background:var(--bg);border-radius:4px;display:flex;align-items:center;justify-content:center;">👜</div><div><div style="font-weight:500;">Gucci Marmont链条包</div></div></div></td><td>SP20260503</td><td>¥12,600</td><td>¥10,080</td><td><span style="color:var(--danger);font-weight:600;">3</span></td><td><span class="tag tag-orange">库存预警</span></td><td><span class="tag tag-green">已上架</span></td><td><button class="btn btn-text btn-sm">编辑</button><button class="btn btn-text btn-sm">补货</button></td></tr>
+  </tbody></table></div><div class="card-footer"><div class="page-info">共 1,286 条</div><div class="page-btns"><div class="page-btn active">1</div><div class="page-btn">2</div><div class="page-btn">›</div></div></div></div>`;
+}
+
+function platProductSupplier() {
+  return `<div class="page-header"><div><div class="page-title">供应商商品</div><div class="page-desc">管理供应商提交的商品，审核上架、价格管控</div></div><div class="page-actions"><button class="btn btn-outline">导出</button><button class="btn btn-primary">+ 添加商品</button></div></div>
+  <div class="stat-grid"><div class="stat-card blue"><div class="stat-label">供应商商品总数</div><div class="stat-value">1,286</div></div><div class="stat-card green"><div class="stat-label">已上架</div><div class="stat-value">968</div></div><div class="stat-card orange"><div class="stat-label">待审核</div><div class="stat-value">45</div></div><div class="stat-card red"><div class="stat-label">已下架</div><div class="stat-value">273</div></div></div>
+  <div class="filter-bar"><div class="filter-group"><div class="filter-label">搜索</div><input class="filter-input" placeholder="商品名称/编码"></div><div class="filter-group"><div class="filter-label">供应商</div><select class="filter-select"><option>全部</option><option>香港国际名品</option><option>巴黎奢品供应链</option></select></div><div class="filter-group"><div class="filter-label">审核状态</div><select class="filter-select"><option>全部</option><option>待审核</option><option>已上架</option></select></div><div class="filter-actions"><button class="btn btn-primary btn-sm">搜索</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th><input type="checkbox"></th><th>商品信息</th><th>供应商</th><th>贸易方式</th><th>市场价</th><th>供应价</th><th>库存</th><th>审核状态</th><th>操作</th></tr></thead><tbody>
+    <tr><td><input type="checkbox"></td><td style="font-weight:500;">Chanel经典翻盖包</td><td>香港国际名品</td><td><span class="tag tag-teal">跨境保税</span></td><td>¥38,800</td><td>¥28,560</td><td>128</td><td><span class="tag tag-green">已上架</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td><input type="checkbox"></td><td style="font-weight:500;">SK-II神仙水</td><td>东京美妆直供</td><td><span class="tag tag-blue">海外直邮</span></td><td>¥1,590</td><td>¥1,080</td><td>256</td><td><span class="tag tag-green">已上架</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td><input type="checkbox"></td><td style="font-weight:500;">Dior烈焰蓝金唇膏</td><td>巴黎奢品供应链</td><td><span class="tag tag-gray">一般贸易</span></td><td>¥380</td><td>¥220</td><td>580</td><td><span class="tag tag-orange">待审核</span></td><td><button class="btn btn-text btn-sm">审核</button></td></tr>
+    <tr><td><input type="checkbox"></td><td style="font-weight:500;">Whoo后天气丹套装</td><td>韩国美妆集团</td><td><span class="tag tag-teal">跨境保税</span></td><td>¥2,880</td><td>¥1,680</td><td>0</td><td><span class="tag tag-red">审核拒绝</span></td><td><button class="btn btn-text btn-sm">详情</button></td></tr>
+  </tbody></table></div><div class="card-footer"><div class="page-info">共 1,286 条</div><div class="page-btns"><div class="page-btn active">1</div><div class="page-btn">›</div></div></div></div>`;
+}
+
+function platProductCategory() {
+  return `<div class="page-header"><div><div class="page-title">商品分类</div><div class="page-desc">管理商品分类，分类可与规格、参数关联</div></div><div class="page-actions"><button class="btn btn-primary">+ 添加分类</button></div></div>
+  <div class="two-col">
+    <div class="tree-list">
+      <div class="tree-item active">👜 箱包 <span class="count">56</span></div>
+      <div class="tree-sub"><div class="tree-item">手提包 <span class="count">28</span></div><div class="tree-item">链条包 <span class="count">16</span></div><div class="tree-item">双肩包 <span class="count">12</span></div></div>
+      <div class="tree-item">🧴 美妆 <span class="count">75</span></div>
+      <div class="tree-item">⌚ 腕表 <span class="count">42</span></div>
+      <div class="tree-item">👔 服饰 <span class="count">56</span></div>
+      <div class="tree-item">💎 珠宝 <span class="count">38</span></div>
+      <div class="tree-item">👟 鞋履 <span class="count">24</span></div>
+    </div>
+    <div class="card" style="padding:20px;">
+      <div class="section-title">分类详情 - 箱包</div>
+      <div class="form-group"><label class="form-label">分类名称:</label><input class="form-input" value="箱包"></div>
+      <div class="form-group"><label class="form-label">上级分类:</label><select class="form-select"><option>无(顶级分类)</option></select></div>
+      <div class="form-group"><label class="form-label">排序号:</label><input class="form-input" type="number" value="1"></div>
+      <div class="form-group"><label class="form-label">分类图标:</label><input class="form-input" value="👜"></div>
+      <div class="form-group"><label class="form-label">关联规格:</label><div class="tag-list"><span class="tag-item active">颜色</span><span class="tag-item active">尺寸</span><span class="tag-item active">材质</span></div></div>
+      <div class="form-group"><label class="form-label">关联参数:</label><div class="tag-list"><span class="tag-item active">品牌</span><span class="tag-item active">产地</span><span class="tag-item">适用性别</span></div></div>
+      <div style="display:flex;gap:8px;margin-top:12px;"><button class="btn btn-primary">保存</button><button class="btn btn-outline">取消</button></div>
+    </div>
+  </div>`;
+}
+
+function platProductBase() {
+  return `<div class="page-header"><div><div class="page-title">基础配置</div><div class="page-desc">商品规格、参数模板、品牌管理、标签管理</div></div></div>
+  <div class="tabs"><div class="tab active">规格管理</div><div class="tab">参数模板</div><div class="tab">品牌管理</div><div class="tab">标签管理</div><div class="tab">计量单位</div></div>
+  <div class="card"><div class="card-header"><div class="card-title">规格管理</div><button class="btn btn-primary btn-sm">+ 新增规格</button></div><div class="table-wrap"><table><thead><tr><th>规格名称</th><th>规格值</th><th>状态</th><th>操作</th></tr></thead><tbody>
+    <tr><td>颜色</td><td><div class="tag-list"><span class="tag-item">黑</span><span class="tag-item">白</span><span class="tag-item">红</span><span class="tag-item">金</span></div></td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>尺寸</td><td><div class="tag-list"><span class="tag-item">S</span><span class="tag-item">M</span><span class="tag-item">L</span><span class="tag-item">XL</span></div></td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>容量</td><td><div class="tag-list"><span class="tag-item">30ml</span><span class="tag-item">50ml</span><span class="tag-item">100ml</span></div></td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>产地</td><td><div class="tag-list"><span class="tag-item">法国</span><span class="tag-item">日本</span><span class="tag-item">韩国</span><span class="tag-item">意大利</span></div></td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+  </tbody></table></div></div>`;
+}
+
+function platLogistics() {
+  return `<div class="page-header"><div><div class="page-title">物流管理</div><div class="page-desc">一件代发运单管理、三方仓储对接、物流追踪</div></div></div>
+  <div class="tabs"><div class="tab active">运单列表</div><div class="tab">物流追踪</div><div class="tab">物流对账</div><div class="tab">三方仓储</div></div>
+  <div class="filter-bar"><div class="filter-group"><div class="filter-label">运单号</div><input class="filter-input" placeholder="请输入"></div><div class="filter-group"><div class="filter-label">物流公司</div><select class="filter-select"><option>全部</option><option>顺丰</option><option>中通</option><option>圆通</option></select></div><div class="filter-group"><div class="filter-label">物流状态</div><select class="filter-select"><option>全部</option><option>清关中</option><option>已签收</option><option>派送中</option></select></div><div class="filter-actions"><button class="btn btn-primary btn-sm">搜索</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>运单号</th><th>订单号</th><th>物流公司</th><th>发货模式</th><th>发货仓库</th><th>物流状态</th><th>发货时间</th><th>操作</th></tr></thead><tbody>
+    <tr><td>SF1234567890</td><td style="color:var(--primary);">CB20260528001</td><td>顺丰</td><td><span class="tag tag-teal">一件代发</span></td><td>杭州保税仓</td><td><span class="tag tag-blue">清关中</span></td><td>2026-05-28 12:00</td><td><button class="btn btn-text btn-sm">追踪</button></td></tr>
+    <tr><td>ZT9876543210</td><td style="color:var(--primary);">CB20260528002</td><td>中通</td><td><span class="tag tag-gray">经销发货</span></td><td>深圳仓库</td><td><span class="tag tag-green">已签收</span></td><td>2026-05-27 10:30</td><td><button class="btn btn-text btn-sm">追踪</button></td></tr>
+    <tr><td>YT5678901234</td><td style="color:var(--primary);">CB20260528003</td><td>圆通</td><td><span class="tag tag-teal">一件代发</span></td><td>广州保税仓</td><td><span class="tag tag-orange">派送中</span></td><td>2026-05-28 08:15</td><td><button class="btn btn-text btn-sm">追踪</button></td></tr>
+  </tbody></table></div><div class="card-footer"><div class="page-info">共 458 条</div><div class="page-btns"><div class="page-btn active">1</div><div class="page-btn">2</div><div class="page-btn">›</div></div></div></div>`;
+}
+
+function platRisk() {
+  return `<div class="page-header"><div><div class="page-title">风控管理</div><div class="page-desc">商品风控策略、预警价格管理、恶意刷单检测</div></div></div>
+  <div class="stat-grid"><div class="stat-card red"><div class="stat-label">今日预警</div><div class="stat-value">8</div></div><div class="stat-card orange"><div class="stat-label">库存预警</div><div class="stat-value">5</div></div><div class="stat-card blue"><div class="stat-label">价格异常</div><div class="stat-value">2</div></div><div class="stat-card purple"><div class="stat-label">疑似刷单</div><div class="stat-value">1</div></div></div>
+  <div class="tabs"><div class="tab active">库存预警</div><div class="tab">价格异常</div><div class="tab">恶意刷单检测</div><div class="tab">风控规则设置</div></div>
+  <div class="card"><div class="card-header"><div class="card-title">库存预警商品</div><button class="btn btn-outline btn-sm">通知补货</button></div><div class="table-wrap"><table><thead><tr><th>商品名称</th><th>当前库存</th><th>预警阈值</th><th>供应商</th><th>操作</th></tr></thead><tbody>
+    <tr><td>Gucci Marmont链条包</td><td><span style="color:var(--danger);font-weight:600;">3</span></td><td>10</td><td>香港国际名品</td><td><button class="btn btn-text btn-sm">通知补货</button></td></tr>
+    <tr><td>LV Neverfull中号</td><td><span style="color:var(--danger);font-weight:600;">2</span></td><td>10</td><td>巴黎奢品供应链</td><td><button class="btn btn-text btn-sm">通知补货</button></td></tr>
+    <tr><td>雅诗兰黛小棕瓶</td><td><span style="color:var(--warning);font-weight:600;">8</span></td><td>15</td><td>东京美妆直供</td><td><button class="btn btn-text btn-sm">通知补货</button></td></tr>
+  </tbody></table></div></div>`;
+}
+
+function platSupplier() {
+  return `<div class="page-header"><div><div class="page-title">供应商管理</div><div class="page-desc">查看供应商信息、入驻审核、修改操作</div></div><div class="page-actions"><button class="btn btn-primary">+ 添加供应商</button></div></div>
+  <div class="stat-grid"><div class="stat-card blue"><div class="stat-label">全部供应商</div><div class="stat-value">56</div></div><div class="stat-card green"><div class="stat-label">正常合作</div><div class="stat-value">48</div></div><div class="stat-card orange"><div class="stat-label">待审核</div><div class="stat-value">4</div></div><div class="stat-card red"><div class="stat-label">已冻结</div><div class="stat-value">4</div></div></div>
+  <div class="filter-bar"><div class="filter-group"><div class="filter-label">供应商名称</div><input class="filter-input" placeholder="请输入"></div><div class="filter-group"><div class="filter-label">审核状态</div><select class="filter-select"><option>全部</option><option>正常合作</option><option>待审核</option><option>已冻结</option></select></div><div class="filter-actions"><button class="btn btn-primary btn-sm">搜索</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>供应商名称</th><th>负责人</th><th>手机号</th><th>商品数</th><th>审核状态</th><th>入驻时间</th><th>操作</th></tr></thead><tbody>
+    <tr><td style="font-weight:500;">巴黎奢品供应链</td><td>张经理</td><td>138****8001</td><td>328</td><td><span class="tag tag-green">正常合作</span></td><td>2026-01-15</td><td><button class="btn btn-text btn-sm">详情</button><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td style="font-weight:500;">香港国际名品</td><td>李总</td><td>139****6002</td><td>186</td><td><span class="tag tag-green">正常合作</span></td><td>2026-02-20</td><td><button class="btn btn-text btn-sm">详情</button><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td style="font-weight:500;">东京美妆直供</td><td>王经理</td><td>136****9003</td><td>92</td><td><span class="tag tag-orange">待审核</span></td><td>2026-05-10</td><td><button class="btn btn-text btn-sm">审核</button></td></tr>
+    <tr><td style="font-weight:500;">意大利皮具中心</td><td>陈总</td><td>137****7004</td><td>156</td><td><span class="tag tag-red">已冻结</span></td><td>2026-03-08</td><td><button class="btn btn-text btn-sm">详情</button></td></tr>
+  </tbody></table></div><div class="card-footer"><div class="page-info">共 56 条</div><div class="page-btns"><div class="page-btn active">1</div><div class="page-btn">2</div><div class="page-btn">›</div></div></div></div>`;
+}
+
+function platChannel() {
+  return `<div class="page-header"><div><div class="page-title">渠道商管理</div><div class="page-desc">对接多分销渠道平台，提供一件代发供应链业务</div></div><div class="page-actions"><button class="btn btn-primary">+ 添加渠道商</button></div></div>
+  <div class="stat-grid"><div class="stat-card blue"><div class="stat-label">全部渠道</div><div class="stat-value">23</div></div><div class="stat-card green"><div class="stat-label">正常合作</div><div class="stat-value">18</div></div><div class="stat-card orange"><div class="stat-label">孵化中商城</div><div class="stat-value">5</div></div><div class="stat-card teal"><div class="stat-label">本月新增</div><div class="stat-value">2</div></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>渠道商名称</th><th>渠道类型</th><th>联系人</th><th>手机号</th><th>商城平台</th><th>一件代发</th><th>合作状态</th><th>操作</th></tr></thead><tbody>
+    <tr><td style="font-weight:500;">CBD奢选旗舰店</td><td>独立商城</td><td>赵总</td><td>135****0001</td><td><span class="tag tag-green">已搭建</span></td><td><span class="tag tag-green">已开通</span></td><td><span class="tag tag-green">正常合作</span></td><td><button class="btn btn-text btn-sm">详情</button></td></tr>
+    <tr><td style="font-weight:500;">巴黎奢品分销</td><td>分销渠道</td><td>刘经理</td><td>138****0002</td><td>-</td><td><span class="tag tag-green">已开通</span></td><td><span class="tag tag-green">正常合作</span></td><td><button class="btn btn-text btn-sm">详情</button></td></tr>
+    <tr><td style="font-weight:500;">香港名品独立站</td><td>独立商城</td><td>黄总</td><td>139****0003</td><td><span class="tag tag-orange">孵化中</span></td><td><span class="tag tag-gray">未开通</span></td><td><span class="tag tag-orange">待上线</span></td><td><button class="btn btn-text btn-sm">详情</button></td></tr>
+  </tbody></table></div></div>`;
+}
+
+function platFinance() {
+  return `<div class="page-header"><div><div class="page-title">结算管理</div><div class="page-desc">店铺结算汇总与明细查看</div></div><div class="page-actions"><button class="btn btn-outline">导出</button></div></div>
+  <div class="tabs"><div class="tab active">结算汇总</div><div class="tab">结算明细</div></div>
+  <div class="filter-bar"><div class="filter-group"><div class="filter-label">店铺</div><select class="filter-select"><option>全部</option><option>CBD奢选旗舰店</option><option>巴黎奢品店</option></select></div><div class="filter-group"><div class="filter-label">结算状态</div><select class="filter-select"><option>全部</option><option>已结算</option><option>待结算</option></select></div><div class="filter-actions"><button class="btn btn-primary btn-sm">查询</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>帐单编号</th><th>店铺</th><th>订单数量</th><th>实付金额</th><th>运费</th><th>退款金额</th><th>结算金额</th><th>结算状态</th><th>结算时间</th><th>操作</th></tr></thead><tbody>
+    <tr><td>ST202605001</td><td>CBD奢选旗舰店</td><td>386</td><td>¥845,980</td><td>¥3,860</td><td>¥12,600</td><td style="font-weight:600;">¥836,520</td><td><span class="tag tag-green">已结算</span></td><td>2026-06-01</td><td><button class="btn btn-text btn-sm">详情</button></td></tr>
+    <tr><td>ST202605002</td><td>巴黎奢品店</td><td>128</td><td>¥324,360</td><td>¥1,280</td><td>¥0</td><td style="font-weight:600;">¥323,080</td><td><span class="tag tag-green">已结算</span></td><td>2026-06-01</td><td><button class="btn btn-text btn-sm">详情</button></td></tr>
+    <tr><td>ST202606001</td><td>CBD奢选旗舰店</td><td>96</td><td>¥215,880</td><td>¥960</td><td>¥5,960</td><td style="font-weight:600;">¥210,920</td><td><span class="tag tag-orange">待结算</span></td><td>-</td><td><button class="btn btn-text btn-sm">详情</button></td></tr>
+  </tbody></table></div><div class="card-footer"><div class="page-info">共 12 条</div><div class="page-btns"><div class="page-btn active">1</div><div class="page-btn">›</div></div></div></div>`;
+}
+
+function platReportProduct() {
+  return `<div class="page-header"><div><div class="page-title">商品统计</div><div class="page-desc">商品销售排行、品类分析、库存周转分析</div></div><div class="page-actions"><button class="btn btn-outline">导出</button></div></div>
+  <div class="stat-grid"><div class="stat-card blue"><div class="stat-label">在售商品数</div><div class="stat-value">2,358</div><div class="stat-footer up">↑ 126</div></div><div class="stat-card green"><div class="stat-label">动销商品数</div><div class="stat-value">1,682</div><div class="stat-footer up">71.3%</div></div><div class="stat-card orange"><div class="stat-label">滞销商品数</div><div class="stat-value">676</div><div class="stat-footer up">↑ 28</div></div><div class="stat-card teal"><div class="stat-label">库存周转天数</div><div class="stat-value">18.5</div><div class="stat-footer down">↓ 2.3</div></div></div>
+  <div class="grid-2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-header"><div class="card-title">品类销售分布</div></div><div class="card-body"><div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;min-width:40px;">箱包</span><div style="flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden;"><div style="width:38%;height:100%;background:var(--primary);border-radius:4px;"></div></div><span style="font-size:12px;min-width:30px;">38%</span></div>
+      <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;min-width:40px;">护肤</span><div style="flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden;"><div style="width:28%;height:100%;background:var(--success);border-radius:4px;"></div></div><span style="font-size:12px;min-width:30px;">28%</span></div>
+      <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;min-width:40px;">彩妆</span><div style="flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden;"><div style="width:18%;height:100%;background:var(--warning);border-radius:4px;"></div></div><span style="font-size:12px;min-width:30px;">18%</span></div>
+      <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;min-width:40px;">服饰</span><div style="flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden;"><div style="width:10%;height:100%;background:#8B5CF6;border-radius:4px;"></div></div><span style="font-size:12px;min-width:30px;">10%</span></div>
+    </div></div></div>
+    <div class="card"><div class="card-header"><div class="card-title">贸易方式分布</div></div><div class="card-body"><div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;min-width:70px;">跨境保税</span><div style="flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden;"><div style="width:45%;height:100%;background:var(--info);border-radius:4px;"></div></div><span style="font-size:12px;">45%</span></div>
+      <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;min-width:70px;">海外直邮</span><div style="flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden;"><div style="width:30%;height:100%;background:var(--primary);border-radius:4px;"></div></div><span style="font-size:12px;">30%</span></div>
+      <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;min-width:70px;">一般贸易</span><div style="flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden;"><div style="width:25%;height:100%;background:var(--success);border-radius:4px;"></div></div><span style="font-size:12px;">25%</span></div>
+    </div></div></div>
+  </div>
+  <div class="card"><div class="card-header"><div class="card-title">商品销售排行 TOP 5</div></div><div class="table-wrap"><table><thead><tr><th>排名</th><th>商品名称</th><th>销量</th><th>销售额</th></tr></thead><tbody>
+    <tr><td>🥇 1</td><td>SK-II神仙水</td><td>1,856</td><td>¥2,951,040</td></tr>
+    <tr><td>🥈 2</td><td>雅诗兰黛小棕瓶</td><td>1,523</td><td>¥2,284,500</td></tr>
+    <tr><td>🥉 3</td><td>Gucci Marmont链条包</td><td>682</td><td>¥8,729,600</td></tr>
+    <tr><td>4</td><td>LV Neverfull中号</td><td>568</td><td>¥7,384,000</td></tr>
+    <tr><td>5</td><td>Whoo后天气丹</td><td>1,280</td><td>¥3,686,400</td></tr>
+  </tbody></table></div></div>`;
+}
+
+function platReportTrade() {
+  return `<div class="page-header"><div><div class="page-title">交易统计</div><div class="page-desc">订单数、付款订单数、交易额、GMV统计</div></div><div class="page-actions"><button class="btn btn-outline">导出报表</button></div></div>
+  <div class="filter-bar"><div class="filter-group"><div class="filter-label">统计周期</div><select class="filter-select"><option>近7天</option><option>近30天</option></select></div><div class="filter-actions"><button class="btn btn-primary btn-sm">查询</button></div></div>
+  <div class="stat-grid" style="grid-template-columns:repeat(6,1fr);">
+    <div class="stat-card blue"><div class="stat-label">订单数</div><div class="stat-value" style="font-size:18px;">8,926</div></div>
+    <div class="stat-card green"><div class="stat-label">付款订单数</div><div class="stat-value" style="font-size:18px;">6,742</div></div>
+    <div class="stat-card orange"><div class="stat-label">交易额</div><div class="stat-value" style="font-size:18px;">¥1,286W</div></div>
+    <div class="stat-card teal"><div class="stat-label">GMV</div><div class="stat-value" style="font-size:18px;">¥1,580W</div></div>
+    <div class="stat-card red"><div class="stat-label">售后单数</div><div class="stat-value" style="font-size:18px;">126</div></div>
+    <div class="stat-card purple"><div class="stat-label">退款额</div><div class="stat-value" style="font-size:18px;">¥18.6W</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card"><div class="card-header"><div class="card-title">交易额趋势</div></div><div class="card-body"><div class="chart-placeholder"><div class="chart-bar" style="height:55%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:70%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:60%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:85%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:75%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:92%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:80%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div></div></div></div>
+    <div class="card"><div class="card-header"><div class="card-title">订单状态分布</div></div><div class="card-body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;">
+      <div style="width:140px;height:140px;border-radius:50%;background:conic-gradient(var(--success) 0% 75%,var(--primary) 75% 88%,var(--warning) 88% 95%,var(--text-secondary) 95% 100%);position:relative;"><div style="position:absolute;top:20%;left:20%;right:20%;bottom:20%;background:var(--white);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:20px;font-weight:700;">6,742</div><div style="font-size:10px;color:var(--text-secondary);">已完成</div></div></div>
+      <div style="display:flex;gap:10px;margin-top:10px;"><div style="font-size:10px;color:var(--text-secondary);"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--success);"></span> 已完成75%</div><div style="font-size:10px;color:var(--text-secondary);"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--primary);"></span> 待发货13%</div><div style="font-size:10px;color:var(--text-secondary);"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--warning);"></span> 售后7%</div></div>
+    </div></div>
+  </div>`;
+}
+
+function platReportMerchant() {
+  return `<div class="page-header"><div><div class="page-title">商户统计</div><div class="page-desc">供应商/渠道商业绩分析、结算统计、合作评级</div></div><div class="page-actions"><button class="btn btn-outline">导出</button></div></div>
+  <div class="stat-grid"><div class="stat-card blue"><div class="stat-label">供应商总数</div><div class="stat-value">86</div><div class="stat-footer up">↑ 3</div></div><div class="stat-card green"><div class="stat-label">活跃供应商</div><div class="stat-value">72</div><div class="stat-footer up">83.7%</div></div><div class="stat-card orange"><div class="stat-label">渠道商总数</div><div class="stat-value">35</div><div class="stat-footer up">↑ 2</div></div><div class="stat-card teal"><div class="stat-label">待审核入驻</div><div class="stat-value">5</div></div></div>
+  <div class="grid-2">
+    <div class="card"><div class="card-header"><div class="card-title">供应商业绩排行</div></div><div class="table-wrap"><table><thead><tr><th>供应商</th><th>评级</th><th>销售额</th></tr></thead><tbody>
+      <tr><td>香港国际名品</td><td><span class="tag tag-purple">S级</span></td><td style="font-weight:600;">¥38,520,000</td></tr>
+      <tr><td>巴黎奢品供应链</td><td><span class="tag tag-purple">S级</span></td><td style="font-weight:600;">¥28,600,000</td></tr>
+      <tr><td>意大利奢品直营</td><td><span class="tag tag-blue">B级</span></td><td style="font-weight:600;">¥15,200,000</td></tr>
+      <tr><td>东京美妆直供</td><td><span class="tag tag-green">A级</span></td><td style="font-weight:600;">¥12,580,000</td></tr>
+      <tr><td>韩国美妆集团</td><td><span class="tag tag-green">A级</span></td><td style="font-weight:600;">¥8,350,000</td></tr>
+    </tbody></table></div></div>
+    <div class="card"><div class="card-header"><div class="card-title">渠道商业绩排行</div></div><div class="table-wrap"><table><thead><tr><th>渠道商</th><th>销售额</th><th>佣金率</th></tr></thead><tbody>
+      <tr><td>奢品优选渠道分销</td><td style="font-weight:600;">¥18,560,000</td><td>8%</td></tr>
+      <tr><td>跨境集合站独立站</td><td style="font-weight:600;">¥12,380,000</td><td>10%</td></tr>
+      <tr><td>美妆分销联盟分销</td><td style="font-weight:600;">¥8,960,000</td><td>6%</td></tr>
+    </tbody></table></div></div>
+  </div>`;
+}
+
+function platMemberList() {
+  return `<div class="page-header"><div><div class="page-title">会员列表</div><div class="page-desc">查看管理会员信息、跨境身份采集</div></div><div class="page-actions"><button class="btn btn-outline">导出会员</button></div></div>
+  <div class="stat-grid"><div class="stat-card blue"><div class="stat-label">总会员数</div><div class="stat-value">12,860</div></div><div class="stat-card green"><div class="stat-label">付费会员</div><div class="stat-value">2,180</div></div><div class="stat-card orange"><div class="stat-label">本月新增</div><div class="stat-value">386</div></div><div class="stat-card teal"><div class="stat-label">跨境已认证</div><div class="stat-value">8,920</div></div></div>
+  <div class="filter-bar"><div class="filter-group"><div class="filter-label">手机号</div><input class="filter-input" placeholder="请输入"></div><div class="filter-group"><div class="filter-label">会员等级</div><select class="filter-select"><option>全部</option><option>普通</option><option>金卡</option><option>黑金</option></select></div><div class="filter-actions"><button class="btn btn-primary btn-sm">搜索</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>手机号</th><th>微信昵称</th><th>会员等级</th><th>会员标签</th><th>跨境认证</th><th>累积消费</th><th>操作</th></tr></thead><tbody>
+    <tr><td>138****2568</td><td>刘女士</td><td><span class="tag tag-purple">黑金</span></td><td><span class="tag tag-blue">高净值</span><span class="tag tag-teal">跨境</span></td><td><span class="tag tag-green">已认证</span></td><td style="font-weight:600;">¥286,500</td><td><button class="btn btn-text btn-sm">详情</button></td></tr>
+    <tr><td>139****8866</td><td>陈先生</td><td><span class="tag tag-orange">金卡</span></td><td><span class="tag tag-teal">跨境</span></td><td><span class="tag tag-green">已认证</span></td><td style="font-weight:600;">¥128,300</td><td><button class="btn btn-text btn-sm">详情</button></td></tr>
+    <tr><td>136****5520</td><td>李小姐</td><td><span class="tag tag-gray">普通</span></td><td><span class="tag tag-green">活跃</span></td><td><span class="tag tag-gray">未认证</span></td><td>¥8,600</td><td><button class="btn btn-text btn-sm">详情</button></td></tr>
+  </tbody></table></div><div class="card-footer"><div class="page-info">共 12,860 条</div><div class="page-btns"><div class="page-btn active">1</div><div class="page-btn">2</div><div class="page-btn">›</div></div></div></div>`;
+}
+
+function platMemberTags() {
+  return `<div class="page-header"><div><div class="page-title">会员标签</div><div class="page-desc">管理会员标签体系，支持自动打标和手动打标</div></div><div class="page-actions"><button class="btn btn-primary">+ 新增标签</button></div></div>
+  <div class="stat-grid"><div class="stat-card blue"><div class="stat-label">标签总数</div><div class="stat-value">56</div></div><div class="stat-card green"><div class="stat-label">自动标签</div><div class="stat-value">32</div></div><div class="stat-card orange"><div class="stat-label">手动标签</div><div class="stat-value">24</div></div><div class="stat-card teal"><div class="stat-label">覆盖会员数</div><div class="stat-value">28,650</div></div></div>
+  <div class="tabs"><div class="tab active">全部标签</div><div class="tab">消费标签</div><div class="tab">行为标签</div><div class="tab">跨境标签</div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>标签名称</th><th>标签类型</th><th>打标方式</th><th>覆盖会员</th><th>状态</th><th>操作</th></tr></thead><tbody>
+    <tr><td style="font-weight:500;">高净值客户</td><td>消费</td><td>自动(年消费>=5W)</td><td>2,350</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td style="font-weight:500;">跨境活跃</td><td>跨境</td><td>自动(近30天下单)</td><td>5,680</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td style="font-weight:500;">美妆达人</td><td>行为</td><td>自动(美妆类购买>=5次)</td><td>3,280</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td style="font-weight:500;">流失预警</td><td>行为</td><td>自动(90天未下单)</td><td>1,860</td><td><span class="tag tag-warning">停用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+  </tbody></table></div></div>`;
+}
+
+function platMemberBenefits() {
+  return `<div class="page-header"><div><div class="page-title">会员权益</div><div class="page-desc">配置会员等级体系、积分规则、专属权益</div></div><div class="page-actions"><button class="btn btn-primary">+ 新增等级</button></div></div>
+  <div class="benefit-grid">
+    <div class="benefit-card" style="border-top:3px solid var(--text-secondary);"><div class="level-name">🥈 银卡会员</div><div class="level-condition">注册即享</div><div class="level-perks">9.8折 / 积分x1 / 免运费¥299</div><div class="level-count">12,580人</div></div>
+    <div class="benefit-card" style="border-top:3px solid #F5A623;"><div class="level-name">🥇 金卡会员</div><div class="level-condition">年消费 >= ¥10,000</div><div class="level-perks">9.5折 / 积分x2 / 免运费¥199 / 专属客服</div><div class="level-count">8,920人</div></div>
+    <div class="benefit-card" style="border-top:3px solid #8B5CF6;"><div class="level-name">💎 铂金会员</div><div class="level-condition">年消费 >= ¥50,000</div><div class="level-perks">9折 / 积分x3 / 全场免运费 / 新品优先购</div><div class="level-count">2,350人</div></div>
+    <div class="benefit-card" style="border-top:3px solid var(--primary);"><div class="level-name">👑 钻石会员</div><div class="level-condition">年消费 >= ¥200,000</div><div class="level-perks">8.5折 / 积分x5 / 全场免运费 / 1对1顾问</div><div class="level-count">356人</div></div>
+  </div>
+  <div class="card"><div class="card-header"><div class="card-title">积分规则</div></div><div class="table-wrap"><table><thead><tr><th>规则名称</th><th>积分</th><th>状态</th></tr></thead><tbody>
+    <tr><td>购物奖励</td><td>1元 = 1积分</td><td><span class="tag tag-success">启用</span></td></tr>
+    <tr><td>签到奖励</td><td>5积分/天</td><td><span class="tag tag-success">启用</span></td></tr>
+    <tr><td>评价奖励</td><td>20积分/次</td><td><span class="tag tag-success">启用</span></td></tr>
+    <tr><td>积分抵扣</td><td>100积分 = ¥1</td><td><span class="tag tag-success">启用</span></td></tr>
+  </tbody></table></div></div>`;
+}
+
+function platOperationData() {
+  return `<div class="page-header"><div><div class="page-title">运营数据</div><div class="page-desc">商城整体运营数据总览、流量转化、用户行为分析</div></div><div class="page-actions"><button class="btn btn-outline">导出</button></div></div>
+  <div class="stat-grid"><div class="stat-card blue"><div class="stat-label">访问量PV</div><div class="stat-value">128,560</div><div class="stat-footer up">↑ 12.3%</div></div><div class="stat-card green"><div class="stat-label">访客数UV</div><div class="stat-value">45,280</div><div class="stat-footer up">↑ 8.5%</div></div><div class="stat-card orange"><div class="stat-label">下单转化率</div><div class="stat-value">6.8%</div><div class="stat-footer up">↑ 0.5%</div></div><div class="stat-card teal"><div class="stat-label">客单价</div><div class="stat-value">¥2,860</div><div class="stat-footer down">↓ 2.1%</div></div></div>
+  <div class="grid-2">
+    <div class="card"><div class="card-header"><div class="card-title">流量趋势</div></div><div class="card-body"><div class="chart-placeholder"><div class="chart-bar" style="height:65%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:80%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:55%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:90%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:72%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:60%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div><div class="chart-bar" style="height:85%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div></div></div></div>
+    <div class="card"><div class="card-header"><div class="card-title">转化漏斗</div></div><div class="card-body"><div class="funnel">
+      <div class="funnel-step"><span class="funnel-label">访问</span><div class="funnel-bar" style="width:100%;background:var(--primary);">45,280</div></div>
+      <div class="funnel-step"><span class="funnel-label">加购</span><div class="funnel-bar" style="width:65%;background:var(--info);">8,560 (18.9%)</div></div>
+      <div class="funnel-step"><span class="funnel-label">下单</span><div class="funnel-bar" style="width:35%;background:var(--warning);">3,080 (6.8%)</div></div>
+      <div class="funnel-step"><span class="funnel-label">支付</span><div class="funnel-bar" style="width:25%;background:var(--success);">2,560 (5.7%)</div></div>
+    </div></div></div>
+  </div>`;
+}
+
+function platOperationInfo() {
+  return `<div class="page-header"><div><div class="page-title">商城信息</div><div class="page-desc">商城基础信息配置、小程序设置、跨境资质</div></div><div class="page-actions"><button class="btn btn-primary">保存修改</button></div></div>
+  <div class="card" style="padding:20px;">
+    <div class="section-title">基础信息</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">商城名称:</label><input class="form-input" value="CBD跨境奢品商城"></div><div class="form-group"><label class="form-label">商城简称:</label><input class="form-input" value="CBD奢品"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">联系电话:</label><input class="form-input" value="400-888-9999"></div><div class="form-group"><label class="form-label">商城简介:</label><input class="form-input" placeholder="请输入"></div></div>
+    <div class="section-title" style="margin-top:16px;">小程序配置</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">AppID:</label><input class="form-input" value="wx8a3c5d9e2f1b7a06" readonly></div><div class="form-group"><label class="form-label">版本:</label><input class="form-input" value="v2.8.6" readonly></div></div>
+    <div class="section-title" style="margin-top:16px;">跨境资质</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">海关备案编号:</label><input class="form-input" value="HC2026032800012" readonly></div><div class="form-group"><label class="form-label">跨境电商企业代码:</label><input class="form-input" value="KJQY4403001234" readonly></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">保税仓编码:</label><input class="form-input" value="BW4403C005" readonly></div><div class="form-group"><label class="form-label">个人年度限额提醒:</label><select class="form-select"><option>达90%时提醒</option><option>达80%时提醒</option></select></div></div>
+  </div>`;
+}
+
+function platCustoms() {
+  return `<div class="page-header"><div><div class="page-title">关务中心</div><div class="page-desc">管理海关关务事宜、关务商品信息、账册信息、货主管理</div></div></div>
+  <div class="stat-grid"><div class="stat-card blue"><div class="stat-label">今日申报单</div><div class="stat-value">128</div></div><div class="stat-card green"><div class="stat-label">已通过</div><div class="stat-value">96</div></div><div class="stat-card orange"><div class="stat-label">清关中</div><div class="stat-value">24</div></div><div class="stat-card red"><div class="stat-label">异常/退单</div><div class="stat-value">8</div></div></div>
+  <div class="card" style="margin-bottom:16px;"><div class="card-header"><div class="card-title">海关总署接口状态</div></div><div class="card-body"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+    <div style="padding:12px;border:1px solid var(--border);border-radius:8px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;">订单 Order</span><span class="tag tag-green">已对接</span></div>
+    <div style="padding:12px;border:1px solid var(--border);border-radius:8px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;">支付单 Payment</span><span class="tag tag-green">已对接</span></div>
+    <div style="padding:12px;border:1px solid var(--border);border-radius:8px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;">运单 Waybill</span><span class="tag tag-green">已对接</span></div>
+    <div style="padding:12px;border:1px solid var(--border);border-radius:8px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;">申报清单 Declaration</span><span class="tag tag-green">已对接</span></div>
+    <div style="padding:12px;border:1px solid var(--border);border-radius:8px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;">入库明细 Inbound</span><span class="tag tag-green">已对接</span></div>
+    <div style="padding:12px;border:1px solid var(--border);border-radius:8px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;">企业备案 Enterprise</span><span class="tag tag-green">已对接</span></div>
+  </div></div></div>
+  <div class="grid-2">
+    <div class="card"><div class="card-header"><div class="card-title">数据对账</div></div><div class="table-wrap"><table><thead><tr><th>对账项目</th><th>单数</th><th>金额</th><th>状态</th></tr></thead><tbody>
+      <tr><td>三单比对</td><td>128</td><td>¥3,860,000</td><td><span class="tag tag-green">正常</span></td></tr>
+      <tr><td>税表数据</td><td>96</td><td>¥2,920,000</td><td><span class="tag tag-green">正常</span></td></tr>
+      <tr><td>购买额度判定</td><td>128</td><td>¥3,860,000</td><td><span class="tag tag-orange">2笔异常</span></td></tr>
+    </tbody></table></div></div>
+    <div class="card"><div class="card-header"><div class="card-title">货主管理</div></div><div class="table-wrap"><table><thead><tr><th>货主</th><th>状态</th><th>操作</th></tr></thead><tbody>
+      <tr><td>CBD供应链有限公司</td><td><span class="tag tag-green">正常</span></td><td><button class="btn btn-text btn-sm">详情</button></td></tr>
+      <tr><td>巴黎奢品中国总代</td><td><span class="tag tag-green">正常</span></td><td><button class="btn btn-text btn-sm">详情</button></td></tr>
+      <tr><td>东京美妆中国运营</td><td><span class="tag tag-orange">待审核</span></td><td><button class="btn btn-text btn-sm">审核</button></td></tr>
+    </tbody></table></div></div>
+  </div>`;
+}
+
+function platTax() {
+  return `<div class="page-header"><div><div class="page-title">税务管理</div><div class="page-desc">跨境税费率配置、行邮税管理、增值税发票管理</div></div></div>
+  <div class="stat-grid"><div class="stat-card blue"><div class="stat-label">本月税费总额</div><div class="stat-value">¥856,320</div></div><div class="stat-card green"><div class="stat-label">跨境综合税</div><div class="stat-value">¥628,560</div></div><div class="stat-card orange"><div class="stat-label">行邮税</div><div class="stat-value">¥185,200</div></div><div class="stat-card teal"><div class="stat-label">增值税</div><div class="stat-value">¥42,560</div></div></div>
+  <div class="tabs"><div class="tab active">税率配置</div><div class="tab">税费记录</div><div class="tab">增值税发票</div></div>
+  <div class="card"><div class="card-header"><div class="card-title">跨境综合税税率配置</div><button class="btn btn-primary btn-sm">+ 新增税率</button></div><div class="table-wrap"><table><thead><tr><th>商品品类</th><th>跨境综合税率</th><th>行邮税率</th><th>状态</th><th>操作</th></tr></thead><tbody>
+    <tr><td>箱包鞋靴</td><td>9.1%</td><td>20%</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>护肤品</td><td>23.06%</td><td>30%</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>彩妆香水</td><td>23.06%</td><td>30%</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>服装配饰</td><td>9.1%</td><td>20%</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>首饰腕表</td><td>23.06%</td><td>30%</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>食品保健</td><td>9.1%</td><td>13%</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+  </tbody></table></div></div>`;
+}
+
+function platSystemAccount() {
+  return `<div class="page-header"><div><div class="page-title">系统账号</div><div class="page-desc">管理平台操作员账号及角色权限</div></div><div class="page-actions"><button class="btn btn-primary">+ 添加管理员</button></div></div>
+  <div class="tabs"><div class="tab active">管理员列表</div><div class="tab">角色管理</div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>管理员</th><th>登录账号</th><th>角色</th><th>状态</th><th>操作</th></tr></thead><tbody>
+    <tr><td>管理员</td><td>admin@cbd.com</td><td><span class="tag tag-purple">超级管理员</span></td><td><span class="tag tag-green">正常</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>张经理</td><td>zhang@cbd.com</td><td><span class="tag tag-blue">运营经理</span></td><td><span class="tag tag-green">正常</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>李客服</td><td>li@cbd.com</td><td><span class="tag tag-green">客服</span></td><td><span class="tag tag-green">正常</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>王财务</td><td>wang@cbd.com</td><td><span class="tag tag-orange">财务</span></td><td><span class="tag tag-green">正常</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+  </tbody></table></div></div>`;
+}
+
+function platSystemNotify() {
+  return `<div class="page-header"><div><div class="page-title">订阅通知</div><div class="page-desc">配置业务事件通知规则、通知渠道、接收人</div></div><div class="page-actions"><button class="btn btn-primary">+ 新增通知规则</button></div></div>
+  <div class="tabs"><div class="tab active">通知规则</div><div class="tab">通知记录</div><div class="tab">接收人管理</div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>规则名称</th><th>触发频率</th><th>通知渠道</th><th>状态</th><th>操作</th></tr></thead><tbody>
+    <tr><td>新订单提醒</td><td>实时</td><td>站内信 + 企业微信</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>订单发货通知</td><td>实时</td><td>站内信 + 短信</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>库存预警</td><td>每日汇总</td><td>站内信 + 邮件</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>售后申请通知</td><td>实时</td><td>站内信 + 企业微信</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>价格异常预警</td><td>实时</td><td>站内信</td><td><span class="tag tag-warning">停用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+  </tbody></table></div></div>`;
+}
+
+function platSystemGeneral() {
+  return `<div class="page-header"><div><div class="page-title">通用设置</div><div class="page-desc">系统基础参数、支付配置、安全设置</div></div><div class="page-actions"><button class="btn btn-primary">保存设置</button></div></div>
+  <div class="card" style="padding:20px;">
+    <div class="section-title">基础参数</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">平台名称:</label><input class="form-input" value="CBD跨境供应链管理平台"></div><div class="form-group"><label class="form-label">系统版本:</label><input class="form-input" value="v3.2.1" readonly></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">默认语言:</label><select class="form-select"><option>简体中文</option><option>English</option></select></div><div class="form-group"><label class="form-label">货币单位:</label><select class="form-select"><option>CNY ¥</option><option>USD $</option></select></div></div>
+    <div class="section-title" style="margin-top:16px;">支付配置</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">微信支付商户号:</label><input class="form-input" value="1488625802"></div><div class="form-group"><label class="form-label">支付超时时间:</label><div style="display:flex;align-items:center;gap:6px;"><input class="form-input" type="number" value="30" style="width:80px;"><span style="font-size:12px;">分钟</span></div></div></div>
+    <div class="section-title" style="margin-top:16px;">安全设置</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">登录失败锁定次数:</label><input class="form-input" type="number" value="5" style="width:80px;"></div><div class="form-group"><label class="form-label">锁定时间:</label><div style="display:flex;align-items:center;gap:6px;"><input class="form-input" type="number" value="30" style="width:80px;"><span style="font-size:12px;">分钟</span></div></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">会话超时:</label><div style="display:flex;align-items:center;gap:6px;"><input class="form-input" type="number" value="120" style="width:80px;"><span style="font-size:12px;">分钟</span></div></div><div class="form-group"><label class="form-label">强制修改密码周期:</label><div style="display:flex;align-items:center;gap:6px;"><input class="form-input" type="number" value="90" style="width:80px;"><span style="font-size:12px;">天</span></div></div></div>
+  </div>`;
+}
+
+function platSystemDelivery() {
+  return `<div class="page-header"><div><div class="page-title">配送设置</div><div class="page-desc">配送方式、物流公司、自提点管理</div></div></div>
+  <div class="tabs"><div class="tab active">配送方式</div><div class="tab">物流公司</div><div class="tab">自提点管理</div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>配送方式</th><th>适用贸易</th><th>时效</th><th>状态</th><th>操作</th></tr></thead><tbody>
+    <tr><td>保税仓直发</td><td><span class="tag tag-teal">跨境保税</span></td><td>3-5工作日</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>海外直邮</td><td><span class="tag tag-blue">跨境直邮</span></td><td>7-15工作日</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>国内快递</td><td><span class="tag tag-gray">一般贸易</span></td><td>1-3工作日</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>门店自提</td><td>全部</td><td>即时</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>同城闪送</td><td>全部</td><td>当日</td><td><span class="tag tag-warning">停用</span></td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+  </tbody></table></div></div>`;
+}
+
+function platSystemFreight() {
+  return `<div class="page-header"><div><div class="page-title">运费模板</div><div class="page-desc">按地区、重量、件数配置运费规则</div></div><div class="page-actions"><button class="btn btn-primary">+ 新增运费模板</button></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>模板名称</th><th>计费方式</th><th>首重/首件</th><th>续重/续件</th><th>包邮条件</th><th>关联商品</th><th>操作</th></tr></thead><tbody>
+    <tr><td style="font-weight:500;">跨境保税-标准</td><td>按重量</td><td>1kg / ¥15</td><td>1kg / ¥5</td><td>满¥299包邮</td><td>1,286件</td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td style="font-weight:500;">海外直邮-标准</td><td>按重量</td><td>1kg / ¥35</td><td>1kg / ¥15</td><td>满¥999包邮</td><td>580件</td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td style="font-weight:500;">国内快递-标准</td><td>按件数</td><td>首件 / ¥8</td><td>续件 / ¥3</td><td>满¥199包邮</td><td>862件</td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>大件重货</td><td>按重量</td><td>5kg / ¥25</td><td>1kg / ¥8</td><td>不包邮</td><td>128件</td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+    <tr><td>偏远地区加价</td><td>按重量</td><td colspan="2">标准 + ¥15</td><td>不包邮</td><td>-</td><td><button class="btn btn-text btn-sm">编辑</button></td></tr>
+  </tbody></table></div></div>`;
+}
+
+// ==================== INIT ====================
+switchSystem('shop');
+</script>
 </body>
 </html>

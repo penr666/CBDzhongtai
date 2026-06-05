@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBD中台管理系统 - 数据大屏</title>
+<link rel="stylesheet" href="common.css">
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">CB</div>
+    <div class="logo-info"><div class="logo-title">CBD中台</div><div class="logo-sub">跨境供应链管理平台</div></div>
+  </div>
+  <div class="sidebar-nav">
+    <!-- 首页 -->
+    <div class="nav-group">
+      <div class="nav-group-title">首页</div>
+      <a class="nav-item active" href="index.html">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        数据大屏
+      </a>
+      <a class="nav-item" href="monitor.html">
+        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01"/></svg>
+        监控管理
+        <span class="badge">5</span>
+      </a>
+    </div>
+
+    <!-- 订单 -->
+    <div class="nav-group">
+      <div class="nav-group-title">订单</div>
+      <a class="nav-item" href="order-list.html">
+        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        订单列表
+        <span class="badge">12</span>
+      </a>
+      <a class="nav-item" href="order-aftersale.html">
+        <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        订单售后
+      </a>
+      <a class="nav-item" href="order-settings.html">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33h.09a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        订单设置
+      </a>
+    </div>
+
+    <!-- 商品 -->
+    <div class="nav-group">
+      <div class="nav-group-title">商品</div>
+      <a class="nav-item" href="product-self.html">
+        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+        自营商品
+      </a>
+      <a class="nav-item" href="product-supplier.html">
+        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M7.5 4.21v4.1a2 2 0 001.14 1.8l5 2.5a2 2 0 001.72 0l5-2.5a2 2 0 001.14-1.8V4.21"/></svg>
+        供应商商品
+      </a>
+      <a class="nav-item" href="product-category.html">
+        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        商品分类
+      </a>
+      <a class="nav-item" href="product-base.html">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09"/></svg>
+        基础配置
+        <span class="arrow">›</span>
+      </a>
+    </div>
+
+    <!-- 物流 -->
+    <div class="nav-group">
+      <div class="nav-group-title">物流</div>
+      <a class="nav-item" href="logistics.html">
+        <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="m16 8 5 3v5H16"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        物流管理
+      </a>
+    </div>
+
+    <!-- 风控 -->
+    <div class="nav-group">
+      <div class="nav-group-title">风控</div>
+      <a class="nav-item" href="risk.html">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        风控管理
+      </a>
+    </div>
+
+    <!-- 供应商 -->
+    <div class="nav-group">
+      <div class="nav-group-title">供应商</div>
+      <a class="nav-item" href="supplier.html">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        供应商管理
+      </a>
+    </div>
+
+    <!-- 渠道商 -->
+    <div class="nav-group">
+      <div class="nav-group-title">渠道商</div>
+      <a class="nav-item" href="channel.html">
+        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+        渠道商管理
+      </a>
+    </div>
+
+    <!-- 财务 -->
+    <div class="nav-group">
+      <div class="nav-group-title">财务</div>
+      <a class="nav-item" href="finance.html">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        结算管理
+      </a>
+    </div>
+
+    <!-- 报表 -->
+    <div class="nav-group">
+      <div class="nav-group-title">报表</div>
+      <a class="nav-item" href="report-product.html">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        商品统计
+      </a>
+      <a class="nav-item" href="report-trade.html">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        交易统计
+      </a>
+      <a class="nav-item" href="report-merchant.html">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        商户统计
+      </a>
+    </div>
+
+    <!-- 会员中心 -->
+    <div class="nav-group">
+      <div class="nav-group-title">会员中心</div>
+      <a class="nav-item" href="member-list.html">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        会员列表
+      </a>
+      <a class="nav-item" href="member-tags.html">
+        <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        会员标签
+      </a>
+      <a class="nav-item" href="member-benefits.html">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        会员权益
+      </a>
+    </div>
+
+    <!-- 商城运营 -->
+    <div class="nav-group">
+      <div class="nav-group-title">商城运营</div>
+      <a class="nav-item" href="operation-data.html">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        运营数据
+      </a>
+      <a class="nav-item" href="operation-info.html">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        商城信息
+      </a>
+    </div>
+
+    <!-- 关务 -->
+    <div class="nav-group">
+      <div class="nav-group-title">关务</div>
+      <a class="nav-item" href="customs.html">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        关务中心
+      </a>
+    </div>
+
+    <!-- 税务 -->
+    <div class="nav-group">
+      <div class="nav-group-title">税务</div>
+      <a class="nav-item" href="tax.html">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        税务管理
+      </a>
+    </div>
+
+    <!-- 系统设置 -->
+    <div class="nav-group">
+      <div class="nav-group-title">系统设置</div>
+      <a class="nav-item" href="system-account.html">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        系统账号
+      </a>
+      <a class="nav-item" href="system-notify.html">
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        订阅通知
+      </a>
+      <a class="nav-item" href="system-general.html">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09"/></svg>
+        通用设置
+      </a>
+      <a class="nav-item" href="system-delivery.html">
+        <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="m16 8 5 3v5H16"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        配送设置
+      </a>
+      <a class="nav-item" href="system-freight.html">
+        <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        运费模板
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="breadcrumb">首页 <span class="sep">/</span> <span>数据大屏</span></div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+      <div class="topbar-icon">
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="dot"></span>
+      </div>
+      <div class="topbar-user">
+        <div class="topbar-avatar">管</div>
+        <span>管理员</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Body -->
+  <div class="page-body">
+    <!-- Alert -->
+    <div class="alert-bar warning">
+      ⚠️ 您有 <b>5</b> 条待处理预警：超时未发货 3 | 异常订单 2 | 库存预警 8 | 退款待处理 5 | 疑似刷单 1，<a href="monitor.html" style="color:inherit;text-decoration:underline;">立即处理 ›</a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-grid">
+      <div class="stat-card blue">
+        <div class="stat-icon blue"><svg viewBox="0 0 24 24" stroke="currentColor"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+        <div class="stat-label">今日GMV</div>
+        <div class="stat-value">¥286.5W</div>
+        <div class="stat-footer up"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> 12.5% 较昨日</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon green"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
+        <div class="stat-label">今日订单数</div>
+        <div class="stat-value">1,284</div>
+        <div class="stat-footer up"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> 8.3% 较昨日</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-icon orange"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div class="stat-label">活跃供应商</div>
+        <div class="stat-value">56</div>
+        <div class="stat-footer up"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> 3 本周新增</div>
+      </div>
+      <div class="stat-card teal">
+        <div class="stat-icon teal"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="stat-label">活跃渠道数</div>
+        <div class="stat-value">23</div>
+        <div class="stat-footer up"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> 2 本月新增</div>
+      </div>
+    </div>
+
+    <!-- Second Row Stats -->
+    <div class="stat-grid" style="grid-template-columns: repeat(5, 1fr);">
+      <div class="stat-card green">
+        <div class="stat-label">今日交易额</div>
+        <div class="stat-value" style="font-size:22px;">¥198.2W</div>
+        <div class="stat-footer up">↑ 10.1%</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">付款订单数</div>
+        <div class="stat-value" style="font-size:22px;">962</div>
+        <div class="stat-footer up">↑ 7.8%</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">售后单数</div>
+        <div class="stat-value" style="font-size:22px;">18</div>
+        <div class="stat-footer down">↑ 3 较昨日</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-label">退款金额</div>
+        <div class="stat-value" style="font-size:22px;">¥2.8W</div>
+        <div class="stat-footer down">↑ 15.2%</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-label">品牌数</div>
+        <div class="stat-value" style="font-size:22px;">128</div>
+        <div class="stat-footer up">↑ 4 本月</div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid-2-1" style="margin-bottom:16px;">
+      <!-- Sales Trend -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">销售趋势</div>
+          <div style="display:flex;gap:4px;">
+            <span class="tag tag-blue" style="cursor:pointer;">近7天</span>
+            <span class="tag tag-gray" style="cursor:pointer;">近30天</span>
+            <span class="tag tag-gray" style="cursor:pointer;">近90天</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-placeholder">
+            <div class="chart-bar" style="height:45%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div>
+            <div class="chart-bar" style="height:62%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div>
+            <div class="chart-bar" style="height:55%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div>
+            <div class="chart-bar" style="height:78%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div>
+            <div class="chart-bar" style="height:65%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div>
+            <div class="chart-bar" style="height:90%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div>
+            <div class="chart-bar" style="height:72%;background:linear-gradient(180deg,var(--primary),rgba(79,110,247,0.2));"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-top:8px;padding:0 20px;">
+            <span>5/22</span><span>5/23</span><span>5/24</span><span>5/25</span><span>5/26</span><span>5/27</span><span>5/28</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Channel Distribution -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">销售渠道分布</div>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:240px;">
+          <div style="width:160px;height:160px;border-radius:50%;background:conic-gradient(var(--primary) 0% 40%, var(--success) 40% 65%, var(--warning) 65% 85%, #8B5CF6 85% 100%);position:relative;">
+            <div style="position:absolute;top:20%;left:20%;right:20%;bottom:20%;background:var(--white);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <div style="font-size:24px;font-weight:700;color:var(--text-primary);font-family:Inter;">56</div>
+              <div style="font-size:10px;color:var(--text-secondary);">总渠道</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;justify-content:center;">
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-secondary);"><span style="width:8px;height:8px;border-radius:2px;background:var(--primary);"></span>小程序 40%</div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-secondary);"><span style="width:8px;height:8px;border-radius:2px;background:var(--success);"></span>H5 25%</div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-secondary);"><span style="width:8px;height:8px;border-radius:2px;background:var(--warning);"></span>分销 20%</div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-secondary);"><span style="width:8px;height:8px;border-radius:2px;background:#8B5CF6;"></span>其他 15%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tables Row -->
+    <div class="grid-2" style="margin-bottom:16px;">
+      <!-- Recent Orders -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">最新订单</div>
+          <a href="order-list.html" style="font-size:12px;color:var(--primary);text-decoration:none;">查看全部 ›</a>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>订单号</th><th>金额</th><th>渠道</th><th>状态</th></tr></thead>
+            <tbody>
+              <tr><td style="color:var(--primary);font-weight:500;">CB20260528001</td><td>¥18,800</td><td>小程序</td><td><span class="tag tag-green">已付款</span></td></tr>
+              <tr><td style="color:var(--primary);font-weight:500;">CB20260528002</td><td>¥2,180</td><td>H5</td><td><span class="tag tag-orange">待发货</span></td></tr>
+              <tr><td style="color:var(--primary);font-weight:500;">CB20260528003</td><td>¥32,800</td><td>小程序</td><td><span class="tag tag-teal">清关中</span></td></tr>
+              <tr><td style="color:var(--primary);font-weight:500;">CB20260528004</td><td>¥12,600</td><td>分销</td><td><span class="tag tag-red">售后中</span></td></tr>
+              <tr><td style="color:var(--primary);font-weight:500;">CB20260528005</td><td>¥5,960</td><td>小程序</td><td><span class="tag tag-blue">已发货</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Supplier Activity -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">供应商动态</div>
+          <a href="supplier.html" style="font-size:12px;color:var(--primary);text-decoration:none;">查看全部 ›</a>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>供应商</th><th>商品数</th><th>状态</th></tr></thead>
+            <tbody>
+              <tr><td>巴黎奢品供应链</td><td>328</td><td><span class="tag tag-green">正常</span></td></tr>
+              <tr><td>香港国际名品</td><td>186</td><td><span class="tag tag-green">正常</span></td></tr>
+              <tr><td>东京美妆直供</td><td>92</td><td><span class="tag tag-orange">审核中</span></td></tr>
+              <tr><td>意大利皮具中心</td><td>156</td><td><span class="tag tag-red">已冻结</span></td></tr>
+              <tr><td>韩国美妆集采</td><td>64</td><td><span class="tag tag-blue">入驻中</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Entry -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">快捷入口</div>
+      </div>
+      <div class="card-body">
+        <div class="quick-grid">
+          <a class="quick-item" href="order-list.html"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg><span>订单管理</span></a>
+          <a class="quick-item" href="product-self.html"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg><span>自营商品</span></a>
+          <a class="quick-item" href="supplier.html"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>供应商</span></a>
+          <a class="quick-item" href="finance.html"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>结算管理</span></a>
+          <a class="quick-item" href="report-trade.html"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>交易报表</span></a>
+          <a class="quick-item" href="customs.html"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>关务中心</span></a>
+          <a class="quick-item" href="member-list.html"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>会员管理</span></a>
+          <a class="quick-item" href="risk.html"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg><span>风控管理</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
